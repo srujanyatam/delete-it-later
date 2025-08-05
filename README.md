@@ -1,113 +1,150 @@
-# AI-Powered Sybase to Oracle Migration Tool
+# 🚀 Sybase to Oracle Migration Tool - Free Online Converter
 
-An intelligent migration solution that leverages Generative AI to automate and optimize database conversion from Sybase to Oracle with accuracy.
+A completely free, no-registration-required online tool to convert Sybase database objects to Oracle PL/SQL.
 
-## Overview
-Migrating enterprise databases from Sybase ASE to Oracle is complex and error-prone. 
-This tool uses AI-driven conversion, human-in-the-loop review, and automated testing to ensure fast and reliable migrations.
+## ✨ Features
 
-## Key Features
-- Smart Code Conversion: AI-powered transformation of schema objects (tables, views, procedures).
-- Interactive Review: Human-in-the-loop editing interface.
-- Automated Testing: Pre-migration validation of converted objects.
-- Comprehensive Reporting: Detailed analytics and unique migration IDs.
-  
-## structure
+- 🔧 **Smart Conversion**: Convert Sybase procedures, functions, triggers, and views to Oracle
+- ⚡ **Instant Results**: No waiting, immediate conversion
+- 🔒 **100% Free**: No registration, no hidden costs
+- 📱 **Works Everywhere**: Desktop, tablet, mobile - no software needed
+- 🛡️ **Secure**: All processing happens locally in your browser
+- 📊 **Best Practices**: Generated Oracle code follows industry standards
 
-```
-project-root/
-├── app.py # FastAPI application entry point
-├── migration.py # Handles LLM-based SQL conversion logic
-├── uploads/ # Stores user-uploaded .sql files
-├── report.html # Report generation UI
-├── review_edit.html # Inline AI assistant for editing converted SQL
-├── testing.html # AI-based testing UI
+## 🌐 Live Demo
 
-├── uipage0.html → uipage4.html # UI pages for navigation and workflow
-├── circular_logo.png # Branding image
-├── venv/ # Python virtual environment
-├── pycache/ # Compiled bytecode files
-└── README.md # Project documentation (this file)
-```
-```
-# Flow of work
+**Coming Soon**: This tool will be deployed to Netlify for free public access.
 
+## 🚀 Quick Start
 
-   ┌─────────────┐        ┌─────────────┐       ┌─────────────┐
-   │  Oracle DB  │        │ Sybase DB   │       │   AI Model  │
-   └──────┬──────┘        └──────┬──────┘       └──────┬──────┘
-          │                       │                   │
-          │                       │                   │
-   ┌──────▼──────┐       ┌────────▼────────┐   ┌──────▼───────┐
-   │  DB Connect │────▶ │ Object Selection│──▶│ AI Conversion│
-   └──────┬──────┘       └────────┬────────┘   └──────┬───────┘
-          │                        │                  │
-          │                        ▼                  │
-          │                ┌───────────────┐          │
-          │                │ Review & Edit │◀─────────┘
-          │                └──────┬────────┘
-          │                       ▼
-          │                ┌───────────────┐
-          │                │   Testing     │
-          │                └──────┬────────┘
-          │                       ▼
-          │                ┌───────────────┐
-          └──────────────▶│ Migration &    │
-                           │   Reporting   │
-                           └───────────────┘
+### Option 1: Use Online (Recommended)
+1. Visit the live website (will be available soon)
+2. Paste your Sybase SQL code
+3. Click "Convert to Oracle"
+4. Copy the converted Oracle code
 
+### Option 2: Run Locally
+1. Clone this repository
+2. Open `index.html` in your browser
+3. Start converting immediately
+
+## 📋 Supported Conversions
+
+| Sybase Object | Oracle Equivalent |
+|---------------|-------------------|
+| `CREATE PROCEDURE` | `CREATE OR REPLACE PROCEDURE` |
+| `CREATE FUNCTION` | `CREATE OR REPLACE FUNCTION` |
+| `CREATE TRIGGER` | `CREATE OR REPLACE TRIGGER` |
+| `CREATE VIEW` | `CREATE OR REPLACE VIEW` |
+| `@parameter` | `parameter_in IN/OUT` |
+| `SELECT` | `OPEN cursor FOR SELECT` |
+
+## 🔧 Example Conversion
+
+### Input (Sybase):
+```sql
+CREATE PROCEDURE GetEmployeeById
+    @emp_id INT
+AS
+BEGIN
+    SELECT * FROM employees WHERE id = @emp_id
+END
 ```
 
-# Technical Stack
-Frontend: HTML5, Streamlit
+### Output (Oracle):
+```sql
+-- Converted from Sybase to Oracle
+-- Original: CREATE PROCEDURE GetEmployeeById
 
-Backend: Python 3.8+
-
-AI Engine: Fine-tuned LLM (Transformers)
-
-Database Connectors: Sybase ASE, Oracle CX
-
-## Installation & Setup
-
-1. ** Clone the Repository **
-``` bash
-git clone https://github.com/KarthikGaneshC/VIRTUSA-JatayuS4-NEXUS
-cd VIRTUSA-JatayuS4-NEXUS
+CREATE OR REPLACE PROCEDURE GetEmployeeById (
+  emp_id_in IN NUMBER,
+  result_cursor OUT SYS_REFCURSOR
+)
+IS
+BEGIN
+  OPEN result_cursor FOR
+    SELECT * FROM employees WHERE id = emp_id_in;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE;
+END;
 ```
 
-**2. Initialize Virtual Environment**
-``` bash
-python -m venv venv
-source venv/bin/activate     # Linux/Mac
-venv\Scripts\activate        # Windows 
+## 🛠️ Technical Details
+
+- **Frontend**: Pure HTML, CSS, JavaScript
+- **No Backend Required**: All processing happens in the browser
+- **No Dependencies**: No external libraries or frameworks
+- **Cross-Platform**: Works on any modern browser
+
+## 📦 Files Structure
+
+```
+├── index.html              # Main converter page
+├── netlify.toml            # Netlify configuration
+├── requirements_netlify.txt # Python dependencies (if needed)
+├── runtime.txt             # Python runtime specification
+└── README.md              # This file
 ```
 
-**3. Install Dependencies**
-```bash
-pip install -r requirements.txt
-```
+## 🌍 Deployment to Netlify
 
-**4. Configure Databases & AI Model**
-  
+### Step 1: Prepare for Deployment
+1. Ensure all files are in the repository
+2. The `index.html` file should be in the root directory
+3. Include the `netlify.toml` configuration file
 
-``` 
-SYBASE_DSN=your_sybase_connection
-ORACLE_DSN=your_oracle_connection
-GEMINI_API = REPLACE WITH YOUR API
-```
+### Step 2: Deploy to Netlify
+1. Go to [netlify.com](https://netlify.com)
+2. Sign up for a free account
+3. Click "New site from Git"
+4. Connect your GitHub repository
+5. Deploy settings:
+   - **Build command**: Leave empty (static site)
+   - **Publish directory**: `.` (root directory)
+6. Click "Deploy site"
 
-**5. Launch the Application**
-``` bash
-python app.py
-```
+### Step 3: Custom Domain (Optional)
+1. In your Netlify dashboard, go to "Domain settings"
+2. Click "Add custom domain"
+3. Follow the DNS configuration instructions
 
-## Example Usage
-- Login and connect to Sybase & Oracle databases.
+## 🔒 Security & Privacy
 
-- Select schema objects to migrate.
+- ✅ **No Data Storage**: Your code never leaves your browser
+- ✅ **No Registration**: No personal information required
+- ✅ **No Tracking**: No analytics or user tracking
+- ✅ **Open Source**: Code is transparent and auditable
 
-- Review and adjust AI-generated conversions.
+## 🤝 Contributing
 
-- Validate with automated testing.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-- Execute migration and download reports.
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🆘 Support
+
+- **Issues**: Create an issue on GitHub
+- **Questions**: Check the documentation or create a discussion
+- **Feature Requests**: Submit via GitHub issues
+
+## 🎯 Roadmap
+
+- [ ] Advanced conversion patterns
+- [ ] Batch file processing
+- [ ] More database object types
+- [ ] Syntax validation
+- [ ] Performance optimization suggestions
+- [ ] Export to different formats
+
+---
+
+**Made with ❤️ for the developer community**
+
+*This tool helps developers migrate from Sybase to Oracle databases efficiently and cost-effectively.*
