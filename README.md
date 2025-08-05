@@ -82,8 +82,8 @@ END;
 ```
 ├── index.html              # Main converter page
 ├── netlify.toml            # Netlify configuration
-├── requirements_netlify.txt # Python dependencies (if needed)
-├── runtime.txt             # Python runtime specification
+├── _redirects              # Netlify redirects for SPA
+├── _headers                # Security headers
 └── README.md              # This file
 ```
 
@@ -102,6 +102,7 @@ END;
 5. Deploy settings:
    - **Build command**: Leave empty (static site)
    - **Publish directory**: `.` (root directory)
+   - **No build command needed** - this is a static HTML site
 6. Click "Deploy site"
 
 ### Step 3: Custom Domain (Optional)
