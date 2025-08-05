@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sybase ➔ Oracle AI Migration | Testing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #5851d6;
+      --accent: #f5f7fa;
+      --box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+      --border-radius: 10px;
+      --font-main: 'Inter', Arial, sans-serif;
+      --text-main: #23272f;
+      --text-muted: #6b7280;
+      --bg-main: #f8fafc;
+      --bg-panel: #fff;
+      --hover: #ecebff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-main);
+      font-family: var(--font-main);
+      color: var(--text-main);
+      font-size: 16px;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      color: #fff;
+      height: 60px;
+      padding: 0 32px;
+      box-shadow: var(--box-shadow);
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      margin-right: 40px;
+      color: #fff;
+      user-select: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .nav-tab {
+      margin-right: 24px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active, .nav-tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .main-body {
+      display: flex;
+      min-height: 92vh;
+      background: var(--bg-main);
+    }
+    .left-panel {
+      width: 320px;
+      background: var(--bg-panel);
+      border-right: 1px solid #e5e7eb;
+      padding: 32px 20px 20px 20px;
+      box-shadow: var(--box-shadow);
+      border-radius: 0 20px 20px 0;
+      min-height: 100vh;
+    }
+    .left-panel h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+    .procedure-button {
+      display: block;
+      margin-bottom: 14px;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 18px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+      transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+      outline: none;
+    }
+    .procedure-button:hover, .procedure-button:focus {
+      background: var(--primary-dark);
+      box-shadow: 0 4px 16px rgba(44,62,80,0.10);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .right-panel {
+      flex: 1;
+      padding: 36px 40px 40px 40px;
+      background: var(--bg-main);
+      min-width: 0;
+    }
+    #proc-name-heading {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+    .split-boxes {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .functionality-box, .code-box {
+      background: var(--bg-panel);
+      border: 1px solid #e5e7eb;
+      border-radius: var(--border-radius);
+      padding: 18px 20px;
+      flex: 1;
+      min-width: 320px;
+      box-shadow: var(--box-shadow);
+      margin-bottom: 0;
+    }
+    .section-title {
+      font-weight: 600;
+      font-size: 1.08rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      letter-spacing: 0.2px;
+    }
+    .code-content {
+      background: #f4f4f4;
+      padding: 12px;
+      white-space: pre-wrap;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      border-radius: 6px;
+      max-height: 320px;
+      overflow: auto;
+      font-size: 0.98rem;
+      color: #23272f;
+      box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+    }
+    .output-box {
+      margin-top: 20px;
+      background: #eafaf1;
+      padding: 12px;
+      border-radius: 7px;
+      display: none;
+      white-space: pre-wrap;
+      font-size: 1rem;
+      color: #1b5e20;
+      border: 1px solid #b2dfdb;
+    }
+    .status-buttons {
+      margin-top: 28px;
+      display: none;
+      gap: 14px;
+      justify-content: flex-end;
+    }
+    .status-buttons button {
+      padding: 12px 20px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+      transition: background 0.15s, transform 0.12s;
+    }
+    .status-buttons button:hover, .status-buttons button:focus {
+      background: var(--primary-dark);
+      transform: translateY(-1px) scale(1.04);
+    }
+    .action-button {
+      margin-top: 24px;
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      font-weight: 700;
+      font-size: 1.08rem;
+      border-radius: 7px;
+      padding: 12px 22px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+      transition: background 0.15s, color 0.15s, border 0.15s, transform 0.12s;
+      outline: none;
+    }
+    .action-button:hover, .action-button:focus {
+      background: var(--primary);
+      color: #fff;
+      border: 2px solid var(--primary-dark);
+      transform: translateY(-1px) scale(1.04);
+    }
+    .view-table-btn {
+      background: #fff;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border 0.15s;
+    }
+    .view-table-btn:hover, .view-table-btn:focus {
+      background: var(--hover);
+      color: var(--primary-dark);
+      border: 1.5px solid var(--primary-dark);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 12px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(44,62,80,0.06);
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 0.97rem;
+    }
+    th {
+      background: #f5f7fa;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    #extra-info {
+      margin: 18px 0 0 0;
+      font-size: 1.02rem;
+      color: var(--primary-dark);
+    }
+    #param-input-section {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      padding: 18px 24px;
+      margin-top: 24px;
+      border: 1px solid #e5e7eb;
+    }
+    #param-input-section h3 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.12rem;
+      font-weight: 700;
+    }
+    input[type="text"] {
+      padding: 8px 10px;
+      border-radius: 5px;
+      border: 1px solid #bdbdbd;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.15s;
+    }
+    input[type="text"]:focus {
+      border: 1.5px solid var(--primary);
+      background: #f5f7fa;
+    }
+    /* Cursor styles */
+    .procedure-button, .action-button, .status-buttons button, .view-table-btn {
+      cursor: pointer;
+    }
+    input[type="text"] {
+      cursor: text;
+    }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .main-body { flex-direction: column; }
+      .left-panel { width: 100%; border-radius: 0; min-height: unset; }
+      .right-panel { padding: 24px 10px; }
+      .split-boxes { flex-direction: column; gap: 12px; }
+      .functionality-box, .code-box { min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <span class="logo">
+      <span class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Sybase ➔ Oracle <span style="color:#00c6fb;margin-left:6px;">AI Migration</span>
+    </span>
+    <a href="uipage1.html" class="nav-tab">Connection</a>
+    <a href="uipage2.html" class="nav-tab">Conversion</a>
+    <a href="uipage3.html" class="nav-tab">File Upload</a>
+    <a href="review_edit.html" class="nav-tab">Review & Edit</a>
+    <div class="nav-tab active">Testing</div>
+    <a href="report.html" class="nav-tab">Report</a>
+  </div>
+  <div class="main-body">
+    <div class="left-panel">
+      <h3>✅ Approved</h3>
+      <div id="approved-buttons-container"></div>
+    </div>
+    <div class="right-panel">
+      <h3 id="proc-name-heading">Select a Procedure</h3>
+      <div class="split-boxes">
+        <div class="functionality-box">
+          <div class="section-title">Sybase Functionality</div>
+          <div id="syb-func"></div>
+        </div>
+        <div class="functionality-box">
+          <div class="section-title">Oracle Functionality</div>
+          <div id="ora-func"></div>
+        </div>
+      </div>
+      <div class="split-boxes" style="margin-top: 20px;">
+        <div class="code-box">
+          <div class="section-title">Sybase Code</div>
+          <div class="code-content" id="syb-code"></div>
+        </div>
+        <div class="code-box">
+          <div class="section-title">Oracle Code</div>
+          <div class="code-content" id="ora-code"></div>
+        </div>
+      </div>
+      <button id="run-both-procedures" class="action-button">▶️ Run Both Procedures</button>
+      <div id="extra-info"></div>
+      <div id="table-data-preview" style="display: none; margin-top: 10px;"></div>
+      <div id="output-section" style="display: none; margin-top: 20px;">
+        <h3>Procedure Outputs</h3>
+        <div class="split-boxes">
+          <div class="code-box">
+            <div class="section-title">Sybase Output</div>
+            <pre id="sybase-output"></pre>
+          </div>
+          <div class="code-box">
+            <div class="section-title">Oracle Output</div>
+            <pre id="oracle-output"></pre>
+          </div>
+        </div>
+      </div>
+      <div class="status-buttons" id="status-buttons">
+        <button onclick="submitResult('approved')">✅ Approve</button>
+        <button onclick="submitResult('rejected')">❌ Reject</button>
+      </div>
+      <div id="param-input-section" style="display:none; margin-top: 20px;">
+        <h3>Enter Parameter Values:</h3>
+        <table id="param-table" border="1" cellpadding="5">
+          <thead>
+            <tr><th>Name</th><th>Type</th><th>Value</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="submit-params-btn" class="action-button">Run Both Procedures</button>
+      </div>
+    </div>
+  </div>
+  <script>
+  let selectedProc = null;
+  let currentData = {};
+
+let isTableVisible = false;
+
+  function loadApprovedProcedures() {
+    const container = document.getElementById('approved-buttons-container');
+    container.innerHTML = ''; 
+
+    const approvedList = JSON.parse(localStorage.getItem("approved_list") || "{}");
+
+    for (const procName in approvedList) {
+      const button = document.createElement("button");
+      button.className = "procedure-button";
+      button.textContent = procName;
+
+      button.onclick = () => loadProcedure(procName, approvedList[procName]);
+
+      container.appendChild(button);
+    }
+
+    console.log("✅ Approved procedures loaded into Testing tab:", approvedList);
+  }
+
+
+  document.addEventListener("DOMContentLoaded", loadApprovedProcedures);
+
+
+function loadProcedure(procName, codeData) {
+  selectedProc = procName;
+
+  document.getElementById("table-data-preview").style.display = "none";
+  document.getElementById("table-data-preview").innerHTML = "";
+  document.getElementById("extra-info").innerHTML = "";
+  isTableVisible = false;
+
+  currentData = {
+    sybase_code: codeData.sybase,
+    oracle_code: codeData.oracle,
+    sybase_function: "", 
+    oracle_function: ""
+  };
+
+  document.getElementById('proc-name-heading').innerText = procName;
+  document.getElementById('syb-code').innerText = codeData.sybase || '';
+  document.getElementById('ora-code').innerText = codeData.oracle || '';
+  document.getElementById('syb-func').innerText = '';
+  document.getElementById('ora-func').innerText = '';
+  document.getElementById('output-section').style.display = 'none';
+  document.getElementById('status-buttons').style.display = 'none';
+
+  const tableUsed = extractTableName(codeData.oracle || codeData.sybase);
+  if (tableUsed) {
+    const viewBtn = document.createElement("button");
+    viewBtn.textContent = `View Data from: ${tableUsed}`;
+    viewBtn.className = "view-table-btn";
+    viewBtn.style.margin = "10px";
+    viewBtn.onclick = () => toggleTableView(tableUsed);
+    document.getElementById('extra-info').appendChild(viewBtn);
+  }
+}
+
+function extractTableName(code) {
+  const match = code.match(/(?:from|into|update)\s+([a-zA-Z_][a-zA-Z0-9_]*)/i);
+  return match ? match[1] : null;
+}
+
+async function toggleTableView(tableName) {
+  const tableContainer = document.getElementById("table-data-preview");
+
+  if (isTableVisible) {
+    tableContainer.style.display = "none";
+    tableContainer.innerHTML = "";
+    isTableVisible = false;
+    return;
+  }
+
+  const res = await fetch("/get_table_data_sybase", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ table_name: tableName })
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    alert("Failed to load table data: " + data.error);
+    return;
+  }
+
+  tableContainer.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.border = "1";
+  table.style.borderCollapse = "collapse";
+  table.style.width = "100%";
+
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  data.columns.forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  data.data.forEach(row => {
+    const tr = document.createElement("tr");
+    data.columns.forEach(col => {
+      const td = document.createElement("td");
+      td.textContent = row[col];
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  tableContainer.appendChild(table);
+  tableContainer.style.display = "block";
+  isTableVisible = true;
+}
+
+
+  function extractTableName(code) {
+  const match = code.match(/(?:from|into|update)\s+([a-zA-Z_][a-zA-Z0-9_]*)/i);
+  return match ? match[1] : null;
+}
+
+async function fetchSybaseTable(tableName) {
+  const res = await fetch("/get_table_data_sybase", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ table_name: tableName })
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    alert("Failed to load table data: " + data.error);
+    return;
+  }
+
+  const tableContainer = document.getElementById("table-data-preview");
+  tableContainer.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.border = "1";
+  table.style.borderCollapse = "collapse";
+  table.style.width = "100%";
+
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  data.columns.forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  data.data.forEach(row => {
+    const tr = document.createElement("tr");
+    data.columns.forEach(col => {
+      const td = document.createElement("td");
+      td.textContent = row[col];
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  tableContainer.appendChild(table);
+  tableContainer.style.display = "block";
+}
+
+  document.getElementById("run-both-procedures").addEventListener("click", async () => {
+    if (!selectedProc) {
+      alert("Please select a procedure.");
+      return;
+    }
+
+    try {
+      const paramRes = await fetch(`/get_procedure_parameters?name=${selectedProc}`);
+      const paramData = await paramRes.json();
+
+      if (paramData.error) {
+        alert("Failed to get parameter info: " + paramData.error);
+        return;
+      }
+
+      const tbody = document.querySelector("#param-table tbody");
+      tbody.innerHTML = "";
+
+      if (!paramData.parameters || paramData.parameters.length === 0) {
+        document.getElementById("param-input-section").style.display = "none";
+        document.getElementById("submit-params-btn").click(); 
+        return;
+      }
+
+      for (const param of paramData.parameters) {
+        if (param.direction && param.direction.toUpperCase() === "OUT") continue;
+
+        const tr = document.createElement("tr");
+
+        const nameTd = document.createElement("td");
+        nameTd.textContent = param.name;
+        tr.appendChild(nameTd);
+
+        const typeTd = document.createElement("td");
+        typeTd.textContent = param.type;
+        tr.appendChild(typeTd);
+
+        const inputTd = document.createElement("td");
+        const inputEl = document.createElement("input");
+        inputEl.type = "text";
+        inputEl.dataset.param = param.name;
+        inputEl.dataset.type = param.type;
+        inputTd.appendChild(inputEl);
+        tr.appendChild(inputTd);
+
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById("param-input-section").style.display = "block";
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while running procedures.");
+    }
+  });
+
+  document.getElementById("submit-params-btn").addEventListener("click", async () => {
+    const inputs = {};
+    const inputEls = document.querySelectorAll('#param-table input');
+
+    for (const input of inputEls) {
+      const name = input.dataset.param;
+      const type = input.dataset.type.toLowerCase();
+      const raw = input.value.trim();
+
+      if (!raw) {
+        alert(`Please enter a value for ${name}`);
+        return;
+      }
+
+      if (["int", "integer", "number", "float", "decimal"].some(t => type.includes(t))) {
+        const num = Number(raw);
+        if (isNaN(num)) {
+          alert(`Invalid number for ${name}`);
+          return;
+        }
+        inputs[name] = num;
+
+      } else if (["date", "datetime", "timestamp"].some(t => type.includes(t))) {
+        const date = new Date(raw);
+        if (isNaN(date.getTime())) {
+          alert(`Invalid date for ${name}`);
+          return;
+        }
+        inputs[name] = raw; 
+      } else {
+        inputs[name] = raw; 
+      }
+    }
+
+    document.getElementById("param-input-section").style.display = "none";
+    const sybaseRes = await fetch('/run_sybase_procedure', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: selectedProc, inputs })
+    });
+
+    const sybData = await sybaseRes.json();
+      document.getElementById("sybase-output").textContent =
+        typeof sybData.output === "object"
+          ? JSON.stringify(sybData.output, null, 2)
+          : (sybData.output || sybData.error || "No output.");
+
+    const oracleRes = await fetch('/run_oracle_procedure', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: selectedProc,
+        inputs,
+        oracle_code: currentData.oracle_code
+      })
+    });
+
+    const oraData = await oracleRes.json();
+    document.getElementById("oracle-output").textContent =
+      Array.isArray(oraData.output)
+        ? JSON.stringify(oraData.output, null, 2)
+        : (oraData.output || oraData.error || "No output.");
+
+    document.getElementById('output-section').style.display = 'block';
+    document.getElementById('status-buttons').style.display = 'flex';
+  });
+
+  function submitResult(status) {
+    const cause = (status === 'rejected') ? prompt("Enter cause:") : "";
+    fetch('/store_testing_result', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        procedure_name: selectedProc,
+        status: status,
+        cause: cause
+      })
+    }).then(res => {
+      if (res.ok) alert("Saved.");
+      updateTestingStats(status);
+      showTestStatusMark(status); 
+    });
+  }
+
+  function updateTestingStats(status) {
+  const MIGRATION_STATS_KEY = "migration_stats";
+  const DEFAULT_MIGRATION_STATS = {
+    migrated: 0,
+    developer_rejected: 0,
+    test_failed: 0,
+    tables: 0,
+    procedures: 0,
+    triggers: 0,
+    cursors: 0,
+    views: 0,
+    functions: 0,
+    dev_rejected_by_type: {
+      tables: 0,
+      procedures: 0,
+      triggers: 0,
+      cursors: 0,
+      views: 0,
+      functions: 0
+    },
+    developer_names: [],
+    accepted: 0,
+    rejected: 0,
+    test_success: 0
+  };
+  let stats = {};
+  try {
+    stats = JSON.parse(localStorage.getItem(MIGRATION_STATS_KEY) || "null") || {};
+  } catch {}
+  stats = { ...DEFAULT_MIGRATION_STATS, ...stats };
+  stats.dev_rejected_by_type = { ...DEFAULT_MIGRATION_STATS.dev_rejected_by_type, ...stats.dev_rejected_by_type };
+
+  if (status === "approved") {
+    stats.test_success = (stats.test_success || 0) + 1;
+  } else if (status === "rejected") {
+    stats.test_failed = (stats.test_failed || 0) + 1;
+  }
+  localStorage.setItem(MIGRATION_STATS_KEY, JSON.stringify(stats));
+}
+
+function showTestStatusMark(status) {
+  let mark = document.getElementById("test-status-mark");
+  if (!mark) {
+    mark = document.createElement("div");
+    mark.id = "test-status-mark";
+    mark.style.position = "fixed";
+    mark.style.top = "90px";
+    mark.style.right = "40px";
+    mark.style.zIndex = "9999";
+    mark.style.fontSize = "2.5rem";
+    mark.style.fontWeight = "bold";
+    mark.style.transition = "opacity 0.3s";
+    document.body.appendChild(mark);
+  }
+  if (status === "approved") {
+    mark.innerHTML = "✅ <span style='font-size:1.2rem;vertical-align:middle;'>Test Approved</span>";
+    mark.style.color = "#43e97b";
+    mark.style.opacity = "1";
+  } else if (status === "rejected") {
+    mark.innerHTML = "❌ <span style='font-size:1.2rem;vertical-align:middle;'>Test Rejected</span>";
+    mark.style.color = "#ff5858";
+    mark.style.opacity = "1";
+  }
+  setTimeout(() => { mark.style.opacity = "0"; }, 2000);
+}
+  
+</script>
+<div id="copilot-chatbot-btn" style="
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+">
+  <span style="display:flex;align-items:center;justify-content:center;">
+    <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+      <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+      <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+      <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </span>
+</div>
+<div id="copilot-chatbot-panel" style="
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 400px;
+  max-width: 98vw;
+  height: 100vh;
+  background: #fff;
+  color: #23272f;
+  box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+  border-radius: 16px 0 0 16px;
+  z-index: 99999;
+  transition: right 0.45s cubic-bezier(.4,2,.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px 22px;background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);border-radius:16px 0 0 0;">
+    <span style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff;">
+      <span style="display:flex;align-items:center;">
+        <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Nexus Buddy
+    </span>
+    <button id="copilot-chatbot-close" style="background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;">×</button>
+  </div>
+  <iframe id="copilot-chatbot-iframe" src="uipage4.html" style="flex:1;border:none;width:100%;height:100%;background:#f8fafc;border-radius:0 0 0 16px;"></iframe>
+</div>
+<style>
+#copilot-chatbot-btn:hover {
+  box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+  transform: scale(1.07);
+}
+#copilot-chatbot-panel {
+  font-family: 'Inter', Arial, sans-serif;
+  box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+}
+@media (max-width: 600px) {
+  #copilot-chatbot-panel {
+    width: 98vw !important;
+    right: -98vw !important;
+    border-radius: 0;
+  }
+}
+</style>
+<script>
+(function(){
+  const btn = document.getElementById('copilot-chatbot-btn');
+  const panel = document.getElementById('copilot-chatbot-panel');
+  const closeBtn = document.getElementById('copilot-chatbot-close');
+  btn.onclick = function() {
+    panel.style.right = '0';
+  };
+  closeBtn.onclick = function() {
+    panel.style.right = panel.offsetWidth > 0 ? `-${panel.offsetWidth}px` : '-420px';
+  };
+  document.addEventListener('keydown', function(e){
+    if(e.key === "Escape") closeBtn.click();
+  });
+})();
+</script>
+</body>
+</html>

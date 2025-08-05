@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NEXUS</title>
+</head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    background-color: #0a1d3c;
+    color: white;
+    text-align: center;
+  }
+
+  .topbar {
+    background-color: #091f3f;
+    padding: 16px 24px;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 120px);
+    gap: 70px;
+    padding-top: 40px;
+  }
+
+  .button {
+    width: 300px;
+    height: 240px;
+    background-color: #1f3b78;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .button:hover {
+    background-color: #3059a0;
+    transform: translateY(-5px);
+  }
+
+  footer {
+    width: 100%;
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 16px;
+    font-weight: bold;
+    position: fixed;
+    bottom: 0;
+  }
+
+  .back-button {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    background-color: #e4e6eb;
+    color: #333;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    z-index: 1000;
+  }
+
+  .back-button:hover {
+    background-color: #ccc;
+  }
+</style>
+
+<body>
+
+  <div class="topbar">NEXUS</div>
+
+  <div class="container">
+    <div class="button" id="connectDB">CONNECT DATABASE SERVER</div>
+    <div class="button" id="uploadfile">UPLOAD THE FILE</div>
+    <div class="button" id="promptfile">PROMPT OR TEMPLATES</div>
+  </div>
+
+  <a href="uipage1.html" class="back-button">← Back</a>
+
+  <footer>
+    <p>NEXUS.ai</p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("connectDB").addEventListener("click", function () {
+        window.location.href = "uipage1.html";
+      });
+
+      document.getElementById("uploadfile").addEventListener("click", function () {
+        window.location.href = "uipage3.html";
+      });
+
+      document.getElementById("promptfile").addEventListener("click", function () {
+        window.location.href = "uipage4.html";
+      });
+    });
+  </script>
+</body>
+</html>

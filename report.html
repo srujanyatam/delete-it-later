@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Migration Report</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #5851d6;
+      --accent: #f5f7fa;
+      --box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+      --border-radius: 12px;
+      --font-main: 'Inter', Arial, sans-serif;
+      --text-main: #23272f;
+      --text-muted: #6b7280;
+      --bg-main: #f8fafc;
+      --bg-panel: #fff;
+      --hover: #ecebff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-main);
+      font-family: var(--font-main);
+      color: var(--text-main);
+      font-size: 16px;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      color: #fff;
+      height: 60px;
+      padding: 0 32px;
+      box-shadow: var(--box-shadow);
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      margin-right: 40px;
+      color: #fff;
+      user-select: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .nav-tab {
+      margin-right: 24px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active, .nav-tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .main-container {
+      max-width: 1100px;
+      margin: 32px auto 0 auto;
+      background: var(--bg-panel);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 32px 36px 36px 36px;
+    }
+    h2, h3 {
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 32px;
+    }
+    .box {
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ecebff 60%, #f5f7fa 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #6c63ff;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      border: 2px solid #ecebff;
+      flex-direction: column;
+    }
+    .chart-container {
+      text-align: center;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      padding: 18px 24px;
+      min-width: 320px;
+    }
+    .chart-container canvas {
+      display: block;
+      margin: 0 auto;
+      width: 260px !important;
+      height: 260px !important;
+    }
+    .status-row {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 10px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(44,62,80,0.06);
+    }
+    th {
+      background: #6c63ff;
+      color: white;
+      padding: 8px;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    td {
+      background: #f8fafc;
+      padding: 8px;
+      border: 1px solid #ecebff;
+      font-size: 0.98rem;
+    }
+    .status-table {
+      width: 240px;
+      min-width: 180px;
+    }
+    .mini-tables {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .mini-table {
+      width: 180px;
+      min-width: 120px;
+    }
+    .dev-table-container {
+      min-width: 180px;
+    }
+    .download-btn {
+      background: linear-gradient(90deg, #6c63ff 60%, #00c6fb 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, transform 0.12s;
+      outline: none;
+      margin-left: 18px;
+    }
+    .download-btn:hover {
+      background: linear-gradient(90deg, #5851d6 60%, #00b4d8 100%);
+      color: #fff;
+      transform: translateY(-2px) scale(1.03);
+    }
+    @media (max-width: 900px) {
+      .main-container { padding: 16px 4px; }
+      .top-row, .status-row, .migration-section { flex-direction: column; gap: 16px; }
+      .chart-container { min-width: unset; }
+      .dev-table-container { min-width: unset; }
+    }
+
+   
+    #copilot-chatbot-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 9999;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    #copilot-chatbot-btn:hover {
+      box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+      transform: scale(1.07);
+    }
+    #copilot-chatbot-panel {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 98vw;
+      height: 100vh;
+      background: #fff;
+      color: #23272f;
+      box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+      border-radius: 16px 0 0 16px;
+      z-index: 99999;
+      transition: right 0.45s cubic-bezier(.4,2,.3,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #copilot-chatbot-panel::-webkit-scrollbar { width: 8px; background: #23272f; }
+    #copilot-chatbot-panel::-webkit-scrollbar-thumb { background: #444; border-radius: 8px; }
+
+    @media (max-width: 600px) {
+      #copilot-chatbot-panel {
+        width: 98vw !important;
+        right: -98vw !important;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <span class="logo">
+      <span class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Sybase ➔ Oracle <span style="color:#00c6fb;margin-left:6px;">AI Migration</span>
+    </span>
+    <a href="uipage1.html" class="nav-tab">Connection</a>
+    <a href="uipage2.html" class="nav-tab">Conversion</a>
+    <a href="uipage3.html" class="nav-tab">File Upload</a>
+    <a href="review_edit.html" class="nav-tab">Review & Edit</a>
+    <a href="testing.html" class="nav-tab">Testing</a>
+    <a href="report.html" class="nav-tab active">Report</a>
+  </div>
+
+  <div class="main-container" id="report-content">
+    <div class="top-row">
+      <div class="box">Tables<br><span id="box-tables">0</span></div>
+      <div class="box">Procedures<br><span id="box-proc">0</span></div>
+      <div class="chart-container">
+        <canvas id="conversionChart"></canvas>
+        <div style="margin-top:8px;"><strong>Migration Status</strong></div>
+      </div>
+      <button class="download-btn" id="download-report-btn">⬇ Download Report</button>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+      <h2>Report ID: <span id="report-id"></span></h2>
+    </div>
+
+    <div class="status-row">
+      <table class="status-table">
+        <thead><tr><th>Status</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr><td>Migrated</td><td id="migrated-count"></td></tr>
+          <tr><td>Developer Accepted</td><td id="dev-accepted-count"></td></tr>
+          <tr><td>Developer Rejected</td><td id="dev-rejected-count"></td></tr>
+          <tr><td>Test Success</td><td id="test-success-count"></td></tr>
+          <tr><td>Test Failed</td><td id="test-failed-count"></td></tr>
+        </tbody>
+      </table>
+      <div class="mini-tables">
+        <table class="mini-table">
+          <thead><tr><th colspan="2">Migrated Objects</th></tr></thead>
+          <tbody id="migrated-table"></tbody>
+        </table>
+        <table class="mini-table">
+          <thead><tr><th colspan="2">Dev Rejected By Type</th></tr></thead>
+          <tbody id="dev-rejected-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dev-table-container" style="margin-top:24px;">
+      <h3>Developer Names</h3>
+      <table>
+        <thead><tr><th>Name</th></tr></thead>
+        <tbody id="developers-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  
+  <div id="copilot-chatbot-btn" style="
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9999;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  ">
+    <span style="display:flex;align-items:center;justify-content:center;">
+      
+      <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+        <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+        <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+        <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>
+  </div>
+  <div id="copilot-chatbot-panel" style="
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    max-width: 98vw;
+    height: 100vh;
+    background: #fff;
+    color: #23272f;
+    box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+    border-radius: 16px 0 0 16px;
+    z-index: 99999;
+    transition: right 0.45s cubic-bezier(.4,2,.3,1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  ">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px 22px;background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);border-radius:16px 0 0 0;">
+      <span style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff;">
+        <span style="display:flex;align-items:center;">
+          <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+            <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+            <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+            <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Nexus Buddy
+      </span>
+      <button id="copilot-chatbot-close" style="background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <iframe id="copilot-chatbot-iframe" src="uipage4.html" style="flex:1;border:none;width:100%;height:100%;background:#f8fafc;border-radius:0 0 0 16px;"></iframe>
+  </div>
+
+  <script>
+    
+    function getReportId() {
+      const d = new Date();
+      const pad = n => n.toString().padStart(2, '0');
+      return (
+        d.getFullYear().toString().slice(2) +
+        pad(d.getMonth() + 1) +
+        pad(d.getDate()) +
+        pad(d.getHours()) +
+        pad(d.getMinutes()) +
+        pad(d.getSeconds())
+      );
+    }
+    document.getElementById("report-id").textContent = getReportId();
+
+  
+    const stats = JSON.parse(localStorage.getItem("migration_stats") || "{}");
+
+  
+    document.getElementById("migrated-count").textContent = stats.migrated || 0;
+    document.getElementById("dev-accepted-count").textContent = stats.accepted || 0;
+    document.getElementById("dev-rejected-count").textContent = stats.developer_rejected || stats.rejected || 0;
+    document.getElementById("test-success-count").textContent = stats.test_success || 0;
+    document.getElementById("test-failed-count").textContent = stats.test_failed || 0;
+
+    
+    function fillMiniTable(id, data) {
+      const container = document.getElementById(id);
+      const types = ["tables", "procedures", "triggers", "cursors", "views", "functions"];
+      container.innerHTML = "";
+      types.forEach(type => {
+        const count = (data && data[type]) ? data[type] : 0;
+        container.innerHTML += `<tr><td>${type.charAt(0).toUpperCase() + type.slice(1)}</td><td>${count}</td></tr>`;
+      });
+    }
+    fillMiniTable('migrated-table', {
+      tables: stats.tables,
+      procedures: stats.procedures,
+      triggers: stats.triggers,
+      cursors: stats.cursors,
+      views: stats.views,
+      functions: stats.functions
+    });
+    fillMiniTable('dev-rejected-table', stats.dev_rejected_by_type || {});
+
+    
+    document.getElementById("box-tables").textContent = stats.tables || 0;
+    document.getElementById("box-proc").textContent = stats.procedures || 0;
+
+
+    const devList = document.getElementById("developers-list");
+    devList.innerHTML = "";
+    (stats.developer_names || []).forEach(name => {
+      devList.innerHTML += `<tr><td>${name}</td></tr>`;
+    });
+
+    
+    const chartData = {
+      labels: ['Migrated', 'Developer Accepted', 'Developer Rejected', 'Test Success', 'Test Failed'],
+      datasets: [{
+        data: [
+          stats.migrated || 0,
+          stats.accepted || 0,
+          stats.rejected || stats.developer_rejected || 0,
+          stats.test_success || 0,
+          stats.test_failed || 0
+        ],
+        backgroundColor: ['#6c63ff', '#43e97b', '#f28e2b', '#00b894', '#ff5858']
+      }]
+    };
+    new Chart(document.getElementById("conversionChart"), {
+      type: 'pie',
+      data: chartData,
+      options: {
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+
+    
+    document.getElementById("download-report-btn").onclick = function() {
+      const html = document.documentElement.outerHTML;
+      const blob = new Blob([html], {type: "text/html"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `MigrationReport_${document.getElementById("report-id").textContent}.html`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    
+    const pdfBtn = document.createElement("button");
+    pdfBtn.className = "download-btn";
+    pdfBtn.style.marginLeft = "12px";
+    pdfBtn.textContent = "⬇ Download PDF";
+    pdfBtn.onclick = function() {
+      const element = document.querySelector('.main-container');
+      html2pdf().set({
+        margin: 0.2,
+        filename: `MigrationReport_${document.getElementById("report-id").textContent}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      }).from(element).save();
+    };
+    document.querySelector('.top-row').appendChild(pdfBtn);
+
+    
+    (function(){
+      const btn = document.getElementById('copilot-chatbot-btn');
+      const panel = document.getElementById('copilot-chatbot-panel');
+      const closeBtn = document.getElementById('copilot-chatbot-close');
+      btn.onclick = function() {
+        panel.style.right = '0';
+      };
+      closeBtn.onclick = function() {
+        panel.style.right = panel.offsetWidth > 0 ? `-${panel.offsetWidth}px` : '-420px';
+      };
+      
+      document.addEventListener('keydown', function(e){
+        if(e.key === "Escape") closeBtn.click();
+      });
+    })();
+  </script>
+</body>
+</html>

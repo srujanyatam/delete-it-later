@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #23272f 60%, #6c63ff 100%);
+      color: #23272f;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      display: flex;
+      width: 800px;
+      max-width: 98vw;
+      height: 600px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 220px;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      color: #fff;
+      padding: 24px 18px;
+      box-sizing: border-box;
+      border-right: 1px solid #ecebff;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .sidebar h2 {
+      margin: 0 0 18px 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex: 1;
+      width: 100%;
+      overflow-y: auto;
+    }
+    .sidebar li {
+      margin: 10px 0;
+      cursor: pointer;
+      color: #e0e0ff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: background 0.18s;
+      font-size: 0.98rem;
+    }
+    .sidebar li:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      background: #f8fafc;
+      position: relative;
+    }
+    .chat-header {
+      padding: 22px 0 8px 0;
+      text-align: center;
+      background: #fff;
+      border-bottom: 1px solid #ecebff;
+    }
+    .chat-header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #6c63ff;
+      margin-bottom: 6px;
+    }
+    .chat-header .welcome {
+      font-size: 1.05rem;
+      color: #23272f;
+      margin-bottom: 2px;
+      font-weight: 400;
+    }
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 24px 32px 12px 32px;
+      background: #f8fafc;
+    }
+    .input-area {
+      display: flex;
+      background: #fff;
+      border-top: 1px solid #ecebff;
+      padding: 16px 24px;
+      gap: 10px;
+      align-items: center;
+    }
+    .input-area input {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #ecebff;
+      padding: 12px 14px;
+      color: #23272f;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin-right: 0;
+      outline: none;
+      transition: border 0.18s;
+    }
+    .input-area input:focus {
+      border: 1.5px solid #6c63ff;
+      background: #fff;
+    }
+    .input-area button {
+      background: linear-gradient(90deg, #6c63ff 60%, #00c6fb 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2em;
+      font-weight: 600;
+      transition: background 0.18s, transform 0.12s;
+    }
+    .input-area button:hover {
+      background: linear-gradient(90deg, #5851d6 60%, #00b4d8 100%);
+      transform: scale(1.07);
+    }
+    .message {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      word-wrap: break-word;
+      font-size: 1rem;
+      box-shadow: 0 1px 6px rgba(44,62,80,0.06);
+    }
+    .user {
+      align-self: flex-end;
+      background: linear-gradient(90deg, #6c63ff 60%, #00c6fb 100%);
+      color: #fff;
+      text-align: right;
+    }
+    .bot {
+      align-self: flex-start;
+      background: #fff;
+      color: #23272f;
+      border: 1px solid #ecebff;
+    }
+    .placeholder {
+      font-size: 1.1em;
+      color: #888;
+      text-align: center;
+      margin-top: 40px;
+      font-weight: 500;
+    }
+    .typing::after {
+      content: ' ';
+      animation: dots 1s steps(5, end) infinite;
+    }
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60% { content: '...'; }
+      80%, 100% { content: ''; }
+    }
+    @media (max-width: 900px) {
+      .container { width: 100vw; height: 100vh; border-radius: 0; }
+      .sidebar { width: 120px; padding: 12px 6px; }
+      .chat-area { padding: 12px 8px 8px 8px; }
+      .input-area { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar" id="sidebar" style="display:none;">
+      <h2>History</h2>
+      <ul id="historyList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="chat-header" style="position:relative;">
+        <button id="toggleHistoryBtn" style="
+          position: absolute;
+          left: 18px;
+          top: 18px;
+          background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          padding: 8px 14px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+          transition: background 0.18s, transform 0.12s;
+          z-index: 2;
+        ">History</button>
+        <div class="logo">
+          <span>
+            <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
+              <circle cx="16" cy="16" r="16" fill="#6c63ff" opacity="0.13"/>
+              <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+              <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Nexus AI
+        </div>
+        <div class="welcome">👋 Welcome! How can I assist you today?</div>
+      </div>
+      <div class="chat-area" id="chatArea">
+        <p class="placeholder">Ask me anything about migration, code, or your project.</p>
+      </div>
+      <div class="input-area">
+        <input type="text" id="promptInput" placeholder="Type your question..." />
+        <button onclick="submitPrompt()">➤</button>
+      </div>
+    </main>
+  </div>
+<script>
+  let historyList, chatArea, promptInput;
+  let sidebar, toggleBtn;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    historyList = document.getElementById('historyList');
+    chatArea = document.getElementById('chatArea');
+    promptInput = document.getElementById('promptInput');
+    sidebar = document.getElementById('sidebar');
+    toggleBtn = document.getElementById('toggleHistoryBtn');
+
+    promptInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitPrompt();
+      }
+    });
+
+    toggleBtn.addEventListener("click", function () {
+      if (sidebar.style.display === "none") {
+        sidebar.style.display = "flex";
+        toggleBtn.textContent = "<-";
+      } else {
+        sidebar.style.display = "none";
+        toggleBtn.textContent = "->";
+      }
+    });
+  });
+
+  async function submitPrompt() {
+    if (!promptInput) return;
+
+    const prompt = promptInput.value.trim();
+    if (!prompt) return;
+
+    const placeholder = document.querySelector('.placeholder');
+    if (placeholder) placeholder.remove();
+
+    const li = document.createElement('li');
+    li.textContent = prompt;
+    historyList.appendChild(li);
+
+    const userMsg = document.createElement('div');
+    userMsg.classList.add('message', 'user');
+    userMsg.innerHTML = `${prompt}`;
+    chatArea.appendChild(userMsg);
+
+    const botMsg = document.createElement('div');
+    botMsg.classList.add('message', 'bot', 'typing');
+    botMsg.innerHTML = `<span id="botText">Thinking</span>`;
+    chatArea.appendChild(botMsg);
+
+    promptInput.value = "";
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+    try {
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "deepseek-coder:6.7b",
+          prompt: prompt,
+          stream: false
+        })
+      });
+
+      const data = await response.json();
+      let botReply = data.response?.trim() || "❌ No response received.";
+      botReply = botReply.replace(/<[^>]*>/g, '').trim();
+
+      botMsg.classList.remove('typing');
+      botMsg.innerHTML = `<span id="botText"></span>`;
+
+      const botTextElement = botMsg.querySelector('#botText');
+      let index = 0;
+
+      function typeLetter() {
+        if (index < botReply.length) {
+          botTextElement.innerHTML += botReply.charAt(index);
+          index++;
+          chatArea.scrollTop = chatArea.scrollHeight;
+          setTimeout(typeLetter, 16);
+        }
+      }
+
+      typeLetter();
+
+    } catch (err) {
+      botMsg.classList.remove('typing');
+      botMsg.innerHTML = "❌ Error connecting to the server.";
+      console.error(err);
+    }
+  }
+</script>
+</body>
+</html>

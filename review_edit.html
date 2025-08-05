@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Review & Edit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #5851d6;
+      --accent: #f5f7fa;
+      --box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+      --border-radius: 10px;
+      --font-main: 'Inter', Arial, sans-serif;
+      --text-main: #23272f;
+      --text-muted: #6b7280;
+      --bg-main: #f8fafc;
+      --bg-panel: #fff;
+      --hover: #ecebff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-main);
+      font-family: var(--font-main);
+      color: var(--text-main);
+      font-size: 16px;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      color: #fff;
+      height: 60px;
+      padding: 0 32px;
+      box-shadow: var(--box-shadow);
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      margin-right: 40px;
+      color: #fff;
+      user-select: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .nav-tab {
+      margin-right: 24px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active, .nav-tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .main-container {
+      display: flex;
+      min-height: 92vh;
+      background: var(--bg-main);
+    }
+    .sidebar {
+      width: 320px;
+      background: var(--bg-panel);
+      border-right: 1px solid #e5e7eb;
+      padding: 32px 20px 20px 20px;
+      box-shadow: var(--box-shadow);
+      border-radius: 0 20px 20px 0;
+      min-height: 100vh;
+    }
+    .sidebar h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+    .profile-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .profile-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: linear-gradient(to right, #e6e6fa, #f8f8ff);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: background 0.3s, transform 0.2s;
+      cursor: pointer;
+    }
+    .profile-item:hover {
+      background: linear-gradient(to right, #dcdcfb, #ececff);
+      transform: translateY(-1px);
+    }
+    .profile-item span {
+      flex-grow: 1;
+      font-weight: 500;
+      color: #333;
+    }
+    .profile-item button {
+      background: transparent;
+      border: none;
+      color: #d9534f;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .profile-item button:hover {
+      color: #c9302c;
+    }
+    .sidebar input[type="checkbox"] {
+      transform: scale(1.1);
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    .sidebar label {
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .code-section {
+      flex: 1;
+      padding: 24px 40px 40px 40px;
+      height: 100%;
+      overflow-y: auto;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: var(--bg-main);
+    }
+    .legend {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .legend span {
+      display: inline-block;
+      margin-right: 15px;
+      font-weight: bold;
+    }
+    .legend .original { color: blue; }
+    .legend .edited { color: orange; }
+    .legend .manual { color: goldenrod; }
+    .code-panels {
+      display: flex;
+      flex-direction: row;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 320px;
+      background: var(--bg-panel);
+      border: 1px solid #e5e7eb;
+      border-radius: var(--border-radius);
+      padding: 18px 20px;
+      box-shadow: var(--box-shadow);
+      margin-bottom: 0;
+    }
+    .panel h3 {
+      margin-top: 0;
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .code-block {
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      background: #f4f4f4;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 0.98rem;
+      color: #23272f;
+      box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+    }
+    .editable {
+      background: #fff6e6;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 6px;
+      min-height: 100px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 0.98rem;
+      outline: none;
+      color: #23272f;
+      box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+      cursor: text;
+    }
+    .toolbar {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .toolbar button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(to right, #6c63ff, #867efc);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .toolbar button:hover {
+      background: linear-gradient(to right, #5a52e6, #776afc);
+    }
+    .toolbar button i {
+      font-size: 16
+    }
+    .section-title {
+      margin-top: 20px;
+      font-weight: bold;
+      color: var(--primary-dark);
+      font-size: 1.08rem;
+    }
+    .status-pending { color: #e6b800; font-weight: bold; }
+    .status-approved { color: green; font-weight: bold; }
+    .status-rejected { color: red; font-weight: bold; }
+    .status-icon { margin-right: 6px; }
+    button.approve-btn {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s, color 0.15s;
+    }
+    button.approve-btn:hover {
+      background: #b7e4c7;
+      color: #0b5138;
+    }
+    button.reject-btn {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s, color 0.15s;
+    }
+    button.reject-btn:hover {
+      background: #f1b0b7;
+      color: #491217;
+    }
+    /* Cursor styles */
+    .profile-item, .toolbar button, .approve-btn, .reject-btn {
+      cursor: pointer;
+    }
+    input[type="text"], .editable {
+      cursor: text;
+    }
+    /* Modern button styles */
+button,
+.sidebar button,
+.approve-btn,
+.reject-btn {
+  background: linear-gradient(90deg, #6c63ff 60%, #00c6fb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+  margin-bottom: 8px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.12s;
+  outline: none;
+  display: inline-block;
+}
+button:hover,
+.sidebar button:hover,
+.approve-btn:hover,
+.reject-btn:hover {
+  background: linear-gradient(90deg, #5851d6 60%, #00b4d8 100%);
+  color: #fff;
+  transform: translateY(-2px) scale(1.03);
+}
+
+.approve-btn {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  color: #155724;
+  border: none;
+}
+.approve-btn:hover {
+  background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+  color: #0b5138;
+}
+.reject-btn {
+  background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
+  color: #fff;
+  border: none;
+}
+.reject-btn:hover {
+  background: linear-gradient(90deg, #f09819 0%, #ff5858 100%);
+  color: #fff;
+}
+
+
+input[type="checkbox"] {
+  accent-color: #6c63ff;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid #6c63ff;
+  margin-right: 8px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+input[type="checkbox"]:hover,
+input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 2px #ecebff;
+}
+
+.sidebar label,
+label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #23272f;
+  cursor: pointer;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+
+
+#copilot-chatbot-btn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+#copilot-chatbot-btn:hover {
+  box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+  transform: scale(1.07);
+}
+#copilot-chatbot-panel {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 400px;
+  max-width: 98vw;
+  height: 100vh;
+  background: #fff;
+  color: #23272f;
+  box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+  border-radius: 16px 0 0 16px;
+  z-index: 99999;
+  transition: right 0.45s cubic-bezier(.4,2,.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', Arial, sans-serif;
+}
+#copilot-chatbot-panel .chatbot-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 22px 10px 22px;
+  background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);
+  border-radius:16px 0 0 0;
+}
+#copilot-chatbot-panel .chatbot-header span {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  font-size:1.15rem;
+  color:#fff;
+}
+#copilot-chatbot-panel .chatbot-header button {
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:2rem;
+  cursor:pointer;
+  line-height:1;
+}
+#copilot-chatbot-panel iframe {
+  flex:1;
+  border:none;
+  width:100%;
+  height:100%;
+  background:#f8fafc;
+  border-radius:0 0 0 16px;
+}
+@media (max-width: 600px) {
+  #copilot-chatbot-panel {
+    width: 98vw !important;
+    right: -98vw !important;
+    border-radius: 0;
+  }
+}
+#ai-popup {
+  position: absolute;
+  display: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 9999;
+  width: 280px;
+}
+mark.ai-selection-highlight {
+  background-color: #ffe58f;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+  <div class="nav-bar">
+    <span class="logo">
+      <span class="logo-icon">
+        
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Sybase ➔ Oracle <span style="color:#00c6fb;margin-left:6px;">AI Migration</span>
+    </span>
+    <a href="uipage1.html" class="nav-tab">Connection</a>
+    <a href="uipage2.html" class="nav-tab">Conversion</a>
+    <a href="uipage3.html" class="nav-tab">File Upload</a>
+    <div class="nav-tab active">Review & Edit</div>
+    <a href="testing.html" class="nav-tab">Testing</a>
+    <a href="report.html" class="nav-tab">Report</a>
+  </div>
+
+  <div style="padding: 8px;">
+    <button onclick="goBack()">← Back</button>
+  </div>
+
+  <div class="main-container">
+    <div class="sidebar">
+      <h3>Developer Profiles</h3>
+      <button onclick="addDeveloper()">+ Add Developer</button>
+      <div class="profile-list" id="profile-list"></div>
+      <hr />
+      <label><input type="checkbox" id="select-all-procs"> Select All </label>
+      <div id="proc-checkbox-list" style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;"></div>
+    </div>
+    <div id="main-container">
+      <div id="greeting-msg" style=" font-size: 18px; font-weight: bold; color: #333;"></div>
+      <div class="legend">
+  <span style="color: blue;">● Original</span>
+  <span style="color: goldenrod;">● Manual Edit</span>
+  <span style="color: orange;">● AI Generated</span>
+</div>
+
+      <div id="dynamic-code-panels" class="code-section"></div>
+    </div>
+  </div>
+
+  <div class="section-title" style="padding: 10px; font-weight: bold;">Developer - Procedure Table</div>
+<div id="dev-proc-table-container" style="padding: 10px;">
+  <button onclick="generateDeveloperCodeTable()" style="margin-bottom: 10px; padding: 8px 14px; border-radius: 6px; background: #6c63ff; color: white;">🔄 Load Table</button>
+  <table id="dev-proc-table" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Developer (Passkey)</th>
+        <th>Procedure</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div id="ai-popup">
+  <textarea id="ai-prompt" placeholder="Ask AI about this code selection..."></textarea>
+  <div style="margin-top: 8px; display:flex; align-items:center; gap:10px;">
+    <button onclick="sendToAI()" id="ask-ai-btn">Ask AI</button>
+    <button onclick="closeAIPopup()">Cancel</button>
+    <span id="ai-spinner" style="display:none; font-size:14px; color:#555;">🔄 Regenerating...</span>
+  </div>
+</div>
+
+
+<div id="copilot-chatbot-btn" style="
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+">
+  <span style="display:flex;align-items:center;justify-content:center;">
+    
+    <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+      <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+      <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+      <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </span>
+</div>
+<div id="copilot-chatbot-panel" style="
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 400px;
+  max-width: 98vw;
+  height: 100vh;
+  background: #fff;
+  color: #23272f;
+  box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+  border-radius: 16px 0 0 16px;
+  z-index: 99999;
+  transition: right 0.45s cubic-bezier(.4,2,.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px 22px;background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);border-radius:16px 0 0 0;">
+    <span style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff;">
+      <span style="display:flex;align-items:center;">
+        <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Nexus Buddy
+    </span>
+    <button id="copilot-chatbot-close" style="background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;">×</button>
+  </div>
+  <iframe id="copilot-chatbot-iframe" src="uipage4.html" style="flex:1;border:none;width:100%;height:100%;background:#f8fafc;border-radius:0 0 0 16px;"></iframe>
+</div>
+<script>
+let objects = [];
+let selectedText = "";
+let popupEl = document.getElementById("ai-popup");
+
+function goBack() {
+  window.location.href = "uipage1.html";
+}
+
+function addDeveloper() {
+  const name = prompt("Enter your name (this will be your passkey):");
+  if (!name) return;
+
+  const converted = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+  let oracleCode = [], sybaseCode = [];
+  if (converted.batch && converted.batch.objects) {
+    sybaseCode = converted.batch.sybase;
+    oracleCode = converted.batch.oracle;
+  }
+  console.log("🧩 Adding Developer:", name);
+  console.log("🧩 Sybase Code:", sybaseCode);
+  console.log("🧩 Oracle Code:", oracleCode);
+  // } else if (converted.batch) {
+  //   sybaseCode = converted.batch.sybase;
+  //   oracleCode = converted.batch.oracle;
+  // }
+
+  let sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  sessions[name] = { oracleCode, sybaseCode, passkey: name };
+  localStorage.setItem("developer_sessions", JSON.stringify(sessions));
+  sessionStorage.setItem("current_developer", name);
+  renderProfileList();
+  showGreeting(name);
+  renderDynamicPanels();
+}
+
+function renderProfileList() {
+  const list = document.getElementById("profile-list");
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  list.innerHTML = "";
+  for (let name in sessions) {
+    const item = document.createElement("div");
+    item.className = "profile-item";
+    item.innerHTML = `
+      <span onclick="selectProfile('${name}')">${name}</span>
+      <button onclick="deleteProfile('${name}')"><i class="fas fa-user-minus"></i></button>
+    `;
+    list.appendChild(item);
+  }
+}
+
+function selectProfile(name) {
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  const storedPasskey = sessions[name]?.passkey || name;
+  const input = prompt(`Enter passkey for profile "${name}":`);
+  if (input === storedPasskey) {
+    sessionStorage.setItem("current_developer", name);
+    renderProfileList();
+    showGreeting(name);
+
+    setTimeout(() => {
+      const selectedIdxs = loadDeveloperSelections();
+      document.querySelectorAll(".proc-check").forEach(cb => {
+        const idx = parseInt(cb.dataset.idx);
+        cb.checked = selectedIdxs.includes(idx);
+      });
+
+      renderCheckboxes();
+      renderDynamicPanels();
+    }, 100);
+  } else {
+    alert("❌ Incorrect passkey.");
+  }
+}
+
+
+function showGreeting(name) {
+  const greetEl = document.getElementById("greeting-msg");
+  greetEl.innerHTML = `👋 Hi, <span style="color: #6c63ff;">${name}</span>!`;
+}
+
+function deleteProfile(name) {
+  let sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  delete sessions[name];
+  localStorage.setItem("developer_sessions", JSON.stringify(sessions));
+  renderProfileList();
+}
+
+
+function saveCode() {
+  const dev = sessionStorage.getItem("current_developer");
+  if (!dev) return alert("Select a profile first.");
+  let oracleCode = "", sybaseCode = "";
+  document.querySelectorAll(".editable").forEach(ed => oracleCode += ed.innerText + "\n");
+  document.querySelectorAll(".code-block").forEach(cd => sybaseCode += cd.innerText + "\n")
+  console.log("sybaseCode:------------------", sybaseCode);
+  let sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  sessions[dev] = { oracleCode, sybaseCode };
+  localStorage.setItem("developer_sessions", JSON.stringify(sessions));
+  alert("Saved for " + dev);
+}
+
+function undoEdit() { document.execCommand("undo"); }
+function redoEdit() { document.execCommand("redo"); }
+
+
+function renderDynamicPanels() {
+  const container = document.getElementById("dynamic-code-panels");
+  container.innerHTML = "";
+
+  const dev = sessionStorage.getItem("current_developer");
+  console.log("🧩 Current Developer:", dev);
+
+  if (!dev) {
+    container.innerHTML = "<p style='color:red;'>⚠️ Please select a developer profile.</p>";
+    return;
+  }
+
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  console.log("📦 All Developer Sessions:", sessions);
+  const devData = sessions[dev] || {};
+  console.log(`📦 Data for ${dev}:`, devData);
+  
+  const data = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+  console.log("📥 Session Converted Review Data:", data);
+  console.log("📥 Session Converted Review Data (Sybase):", data.batch.sybase);
+  console.log("📥 Session Converted Review Data (Oracle):", data.batch.oracle);
+
+  const selected = Array.from(document.querySelectorAll(".proc-check"))
+    .filter(cb => cb.checked)
+    .map(cb => parseInt(cb.dataset.idx));
+
+    console.log("✅ Selected Procedure Indexes:", selected);
+console.log("Objects to render:", objects);
+
+container.innerHTML = ""; 
+
+selected.forEach(i => {
+  const obj = objects[i];
+  const procName = obj.name;
+  console.log("🔍 Rendering Procedure:", procName);
+
+  let sybCode = "--", oraCode = "--";
+
+  
+  if (devData[procName]) {
+    console.log(`📂 Using saved code for ${procName}:`, devData[procName]);
+    sybCode = devData[procName].sybaseCode || "--";
+    oraCode = devData[procName].oracleCode || "--";
+
+  
+  } else if (
+    data.batch && data.batch.objects &&
+    data.batch.sybase && data.batch.oracle &&
+    data.batch.sybase.length > i && data.batch.oracle.length > i
+  ) {
+    const splitSybase = data.batch.sybase[i].split("\n").filter(Boolean) || [];
+    const splitOracle = data.batch.oracle[i]?.split("\n").filter(Boolean) || [];
+
+    console.log(`🔄 Fallback for ${procName} using batch data:`, splitSybase, splitOracle);
+
+    const sybaseBlock = splitSybase.filter(line => line.toLowerCase().includes(procName.toLowerCase()) || line.trim() !== "").join("\n");
+    const oracleBlock = splitOracle.filter(line => line.toLowerCase().includes(procName.toLowerCase()) || line.trim() !== "").join("\n");
+
+
+    if (sybaseBlock) sybCode = sybaseBlock.replace(/^\s*[\r\n]*/g, "");
+    console.log(`🔄 Sybase Code for ${procName}:`, sybCode);
+    if (oracleBlock) {
+      let cleaned = oracleBlock.replace(/^.*?Converted.*?--\s*/i, "");
+      oraCode = cleaned.replace(/^\s*[\r\n]*/g, "");
+    }
+    console.log(`🔄 Oracle Code for ${procName}:`, oraCode);
+    
+    console.log(`🧾 Using fallback for ${procName}`);
+
+  
+  } else if (data.single && data.single.name === procName) {
+    sybCode = data.single.sybase || "--";
+    oraCode = data.single.oracle || "--";
+    console.log(`📄 Single object fallback for ${procName}`);
+  }
+
+  
+  const editId = `edit-${i}`;
+  const wrapper = document.createElement("div");
+
+  wrapper.innerHTML = `
+    <div class="code-panels" style="display: flex; gap: 10px; margin-bottom: 30px;">
+      <div class="panel" style="flex: 1;">
+        <h3>${procName} - Sybase Code</h3>
+        <div class="code-block" style="background:#f4f4f4; padding:10px; border-radius:6px; white-space:pre-wrap;">${sybCode.replace(/</g, "&lt;")}</div>
+      </div>
+      <div class="panel" style="flex: 1;">
+        <h3>${procName} - Oracle Code</h3>
+        <div class="editable" contenteditable="true" id="${editId}" style="background:#fff6e6; padding:10px; border:1px solid #ccc; border-radius:6px; min-height:100px; white-space:pre-wrap;">${oraCode.replace(/</g, "&lt;")}</div>
+        <div class="toolbar" style="margin-top: 10px;">
+          <button onclick="saveDynamicCode('${editId}', ${i})">💾 Save</button>
+          <button onclick="document.getElementById('${editId}').focus(); document.execCommand('undo')">↩️ Undo</button>
+          <button onclick="document.getElementById('${editId}').focus(); document.execCommand('redo')">↪️ Redo</button>
+          <button onclick="compileDynamicCode('${editId}')">🧪 Compile</button>
+        </div>
+        <div id="compile-result-${i}" style="margin-top: 10px; color: green;"></div>
+      </div>
+    </div>
+  `;
+  
+  container.appendChild(wrapper);
+});
+}
+
+
+function getAssignmentMap() {
+  const raw = sessionStorage.getItem("assignments");
+  return raw ? JSON.parse(raw) : {};
+}
+
+function setAssignmentMap(map) {
+  sessionStorage.setItem("assignments", JSON.stringify(map));
+}
+
+
+
+function assignProceduresToDeveloper() {
+  const dev = sessionStorage.getItem("current_developer");
+  if (!dev) return alert("Select a profile first.");
+
+  const checkedIdxs = Array.from(document.querySelectorAll(".proc-check"))
+    .filter(cb => cb.checked)
+    .map(cb => parseInt(cb.dataset.idx));
+
+  let map = getAssignmentMap();
+
+  
+  for (let d in map) {
+    if (d !== dev) {
+      map[d] = map[d].filter(idx => !checkedIdxs.includes(idx));
+    }
+  }
+
+  
+  map[dev] = Array.from(new Set([...(map[dev] || []), ...checkedIdxs]));
+
+  setAssignmentMap(map);
+  renderCheckboxes();
+  renderDynamicPanels();
+  alert("Assigned selected procedures to " + dev);
+}
+
+
+function renderCheckboxes() {
+  const map = getAssignmentMap();
+  const currentDeveloper = sessionStorage.getItem("current_developer");
+
+  if (!map || !currentDeveloper) return;
+
+  document.querySelectorAll(".proc-check").forEach(cb => {
+    
+    const procName = cb.nextSibling.textContent.trim();
+    const idx = objects.findIndex(o => o.name === procName);  
+
+    if (idx === -1) return; 
+
+    let assignedTo = null;
+    for (const dev in map) {
+      if (map[dev].includes(idx)) {
+        assignedTo = dev;
+        break;
+      }
+    }
+
+    
+    if (assignedTo && assignedTo !== currentDeveloper) {
+      cb.parentElement.remove();
+    }
+
+    
+    cb.dataset.idx = idx;
+
+    
+    cb.checked = (assignedTo === currentDeveloper);
+  });
+}
+
+
+
+(function addAssignButton() {
+  const sidebar = document.querySelector(".sidebar");
+  const btn = document.createElement("button");
+  btn.textContent = "Assign Selected";
+  btn.style.marginTop = "10px";
+  btn.onclick = assignProceduresToDeveloper;
+  sidebar.insertBefore(btn, document.getElementById("proc-checkbox-list"));
+})();
+
+
+document.addEventListener("DOMContentLoaded", renderCheckboxes);
+window.renderCheckboxes = renderCheckboxes;
+
+
+function saveDeveloperSelections() {
+  const dev = sessionStorage.getItem("current_developer");
+  if (!dev) return;
+
+  const checked = Array.from(document.querySelectorAll(".proc-check"))
+    .filter(cb => cb.checked)
+    .map(cb => parseInt(cb.dataset.idx));
+
+  let devMap = JSON.parse(localStorage.getItem("developer_proc_map") || "{}");
+  devMap[dev] = checked;
+  localStorage.setItem("developer_proc_map", JSON.stringify(devMap));
+}
+
+function loadDeveloperSelections() {
+  const dev = sessionStorage.getItem("current_developer");
+  if (!dev) return [];
+
+  let devMap = JSON.parse(localStorage.getItem("developer_proc_map") || "{}");
+  return devMap[dev] || [];
+}
+
+
+function selectProfile(name) {
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  const storedPasskey = sessions[name]?.passkey || name;
+  const input = prompt(`Enter passkey for profile "${name}":`);
+  if (input === storedPasskey) {
+    sessionStorage.setItem("current_developer", name);
+    renderProfileList();
+    showGreeting(name);
+
+   
+    setTimeout(() => {
+      const selectedIdxs = loadDeveloperSelections();
+      const savedProcNames = Object.keys(sessions[name] || {}).filter(k =>
+        k !== "passkey" && k !== "oracleCode" && k !== "sybaseCode"
+      );
+
+      document.querySelectorAll(".proc-check").forEach(cb => {
+        const idx = parseInt(cb.dataset.idx);
+        const objName = objects[idx]?.name;
+        if (selectedIdxs.includes(idx) || savedProcNames.includes(objName)) {
+          cb.checked = true;
+        } else {
+          cb.checked = false;
+        }
+      });
+
+      renderDynamicPanels();
+    }, 100);
+  } else {
+    alert("❌ Incorrect passkey.");
+  }
+}
+
+
+
+document.addEventListener("change", function (e) {
+  if (e.target.classList.contains("proc-check")) {
+    saveDeveloperSelections();
+  }
+});
+
+function saveDynamicCode(editId, index) {
+  const dev = sessionStorage.getItem("current_developer");
+  if (!dev) return alert("Select a profile first");
+
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  const oracleCode = document.getElementById(editId).innerText;
+  const sybaseCode = Array.from(document.querySelectorAll(".code-block")).map(cd => cd.innerText).join("\n");
+  const procName = objects[index].name;
+
+  if (!sessions[dev]) sessions[dev] = {};
+  sessions[dev][procName] = { oracleCode, sybaseCode };
+
+  localStorage.setItem("developer_sessions", JSON.stringify(sessions));
+  alert(`Saved code for ${dev} [${procName}]`);
+}
+
+
+function compileDynamicCode(editId) {
+  const oracleCode = document.getElementById(editId).innerText;
+  const outputContainer = document.getElementById("compile-output");
+  if (!outputContainer) {
+    const resultBox = document.createElement("div");
+    resultBox.id = "compile-output";
+    resultBox.style = "padding: 10px; background: #f0f0f0; margin: 10px; border-radius: 6px; color: #333;";
+    document.querySelector(".section-title").before(resultBox);
+  }
+
+  document.getElementById("compile-output").innerHTML = "<div style='color: gray;'>🧪 Compiling...</div>";
+
+  fetch("/compile_oracle_code", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ oracle_code: oracleCode })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById("compile-output").innerHTML = "<div style='color: green;'>✅ Compiled Successfully</div>";
+    } else if (data.errors?.length) {
+      const errors = data.errors.map(e => `<div style='color: red;'>❌ ${e.type} [${e.object}]: ${e.message}</div>`).join('');
+      document.getElementById("compile-output").innerHTML = errors;
+    } else {
+      document.getElementById("compile-output").innerHTML = "<div style='color: orange;'>⚠️ Unknown compiler response</div>";
+    }
+  })
+  .catch(err => {
+    document.getElementById("compile-output").innerHTML = `<div style='color: red;'>❌ Compile Error: ${err.message}</div>`;
+  });
+}
+
+
+document.addEventListener("mouseup", function (e) {
+  const selection = window.getSelection();
+  const text = selection.toString().trim();
+
+  if (text.length > 0 && selection.anchorNode && selection.anchorNode.parentElement.closest(".editable")) {
+    selectedText = text;
+
+    
+    const range = selection.getRangeAt(0);
+    const mark = document.createElement("mark");
+    mark.className = "ai-selection-highlight";
+    range.surroundContents(mark);
+
+    popupEl.style.left = e.pageX + "px";
+    popupEl.style.top = e.pageY + "px";
+    popupEl.style.display = "block";
+  }
+});
+
+
+document.addEventListener("click", function (e) {
+  if (popupEl.style.display === "block" && !popupEl.contains(e.target) && !e.target.closest(".editable")) {
+    popupEl.style.display = "none";
+  }
+});
+
+function closeAIPopup() {
+  popupEl.style.display = "none";
+}
+
+
+function sendToAI() {
+  const question = document.getElementById("ai-prompt").value.trim();
+  if (!question) {
+    alert("⚠️ Please type a question for the AI.");
+    return;
+  }
+
+  if (!selectedText) {
+    alert("⚠️ Please select some Oracle code to regenerate.");
+    return;
+  }
+
+
+  document.getElementById("ai-spinner").style.display = "inline";
+  document.getElementById("ask-ai-btn").disabled = true;
+  document.getElementById("ask-ai-btn").textContent = "Working...";
+
+  fetch("/ask_ai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ selection: selectedText, prompt: question })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const suggestion = data.answer || "No suggestion available.";
+
+   
+    const marked = document.querySelector("mark.ai-selection-highlight");
+    if (marked) {
+      marked.outerHTML = `<span class="ai-edit">${suggestion}</span>`;
+    }
+
+    popupEl.style.display = "none";
+    document.getElementById("ai-prompt").value = "";
+  })
+  .catch(err => {
+    console.error("❌ AI Error:", err);
+    alert("❌ Could not connect to AI service. Check Flask logs.");
+  })
+  .finally(() => {
+    
+    document.getElementById("ai-spinner").style.display = "none";
+    document.getElementById("ask-ai-btn").disabled = false;
+    document.getElementById("ask-ai-btn").textContent = "Ask AI";
+  });
+}
+
+
+const MIGRATION_STATS_KEY = "migration_stats";
+
+
+function getAllObjects() {
+  const data = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+  if (data.batch && Array.isArray(data.batch.objects)) return data.batch.objects;
+  if (data.single) return [data.single];
+  return [];
+}
+
+
+function getDeveloperNames() {
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  return Object.keys(sessions);
+}
+
+function getStatusMap() {
+  const tableBody = document.getElementById("object-table-body");
+  const statusMap = {};
+  if (!tableBody) return statusMap;
+  Array.from(tableBody.rows).forEach((row, i) => {
+    const name = row.cells[0]?.textContent?.trim();
+    const type = row.cells[1]?.textContent?.trim().toLowerCase();
+    const statusCell = row.cells[2];
+    let status = "pending";
+    if (statusCell.classList.contains("status-approved") || statusCell.textContent.includes("Approved")) status = "approved";
+    if (statusCell.classList.contains("status-rejected") || statusCell.textContent.includes("Rejected")) status = "rejected";
+    statusMap[name] = { type, status };
+  });
+  return statusMap;
+}
+
+
+function updateMigrationStats() {
+  const objects = getAllObjects();
+  const statusMap = getStatusMap();
+  const devNames = getDeveloperNames();
+
+
+  const types = ["table", "procedure", "trigger", "cursor", "view", "function"];
+  const stats = {
+    migrated: 0,
+    developer_rejected: 0,
+    test_failed: 0,
+    tables: 0,
+    procedures: 0,
+    triggers: 0,
+    cursors: 0,
+    views: 0,
+    functions: 0,
+    dev_rejected_by_type: {
+      tables: 0,
+      procedures: 0,
+      triggers: 0,
+      cursors: 0,
+      views: 0,
+      functions: 0
+    },
+    developer_names: devNames
+  };
+
+ 
+  objects.forEach(obj => {
+    const type = (obj.type || "").toLowerCase();
+    if (type === "table") stats.tables++;
+    if (type === "procedure") stats.procedures++;
+    if (type === "trigger") stats.triggers++;
+    if (type === "cursor") stats.cursors++;
+    if (type === "view") stats.views++;
+    if (type === "function") stats.functions++;
+  });
+
+  Object.entries(statusMap).forEach(([name, { type, status }]) => {
+    if (status === "approved") stats.migrated++;
+    if (status === "rejected") {
+      stats.developer_rejected++;
+     
+      const t = (type || "").toLowerCase();
+      if (t === "table") stats.dev_rejected_by_type.tables++;
+      if (t === "procedure") stats.dev_rejected_by_type.procedures++;
+      if (t === "trigger") stats.dev_rejected_by_type.triggers++;
+      if (t === "cursor") stats.dev_rejected_by_type.cursors++;
+      if (t === "view") stats.dev_rejected_by_type.views++;
+      if (t === "function") stats.dev_rejected_by_type.functions++;
+    }
+  });
+
+ 
+  localStorage.setItem(MIGRATION_STATS_KEY, JSON.stringify(stats));
+}
+
+
+const _orig_updateStatus = updateStatus;
+updateStatus = function(i, status) {
+  _orig_updateStatus(i, status);
+  updateMigrationStats();
+};
+const _orig_rejectProcedure = rejectProcedure;
+rejectProcedure = function(index) {
+  _orig_rejectProcedure(index);
+  updateMigrationStats();
+};
+
+
+window.addEventListener("DOMContentLoaded", function() {
+  setTimeout(updateMigrationStats, 200);
+});
+
+
+window.onload = function () {
+  renderProfileList();
+  const data = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+  const selectAll = document.getElementById("select-all-procs");
+  const checkboxList = document.getElementById("proc-checkbox-list");
+  const tableBody = document.getElementById("object-table-body");
+
+  let allObjects = [];
+  if (data.batch && Array.isArray(data.batch.objects)) {
+    allObjects = data.batch.objects;
+  } else if (data.single) {
+    allObjects = [data.single];
+  }
+  objects = allObjects;
+  console.log("📦 All Objects:", allObjects);
+
+  // const hasConvertedCode = (
+  //   (data.single && data.single.oracle?.trim()) ||
+  //   (data.batch && data.batch.oracle?.trim())
+  // );
+
+  // if (!hasConvertedCode) {
+  //   selectAll.parentElement.style.display = "none";
+  // } else {
+  //   selectAll.parentElement.style.display = "block";
+  // }
+
+  //obj[0].name
+  checkboxList.innerHTML = allObjects.map((obj, i) => `
+    <label><input type="checkbox" class="proc-check" data-idx="${i}"> ${obj.name} (${obj.type})</label>
+  `).join("");
+
+  selectAll.addEventListener("change", function () {
+    document.querySelectorAll(".proc-check").forEach(cb => {
+      cb.checked = this.checked;
+      cb.dispatchEvent(new Event("change"));
+    });
+  });
+
+  document.querySelectorAll(".proc-check").forEach(cb => {
+    cb.addEventListener("change", function () {
+      const dev = sessionStorage.getItem("current_developer");
+      if (!dev) {
+        cb.checked = false;
+        alert("⚠️ Please select or create a developer profile first.");
+        return;
+      }
+      renderDynamicPanels();
+    });
+  });
+
+  tableBody.innerHTML = allObjects.map((obj, i) => `
+    <tr>
+      <td>${obj.name}</td>
+      <td>${obj.type}</td>
+      <td class="status-pending"><span class="status-icon">⏳</span>Pending</td>
+      <td>
+        <button onclick="updateStatus(${i}, 'approved')">Approve</button>
+        <button onclick="updateStatus(${i}, 'rejected')">Reject</button>
+      </td>
+    </tr>
+  `).join("");
+};
+
+
+
+document.addEventListener("input", function(e) {
+  if (e.target.classList.contains("editable")) {
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0 && e.data) {
+      const range = sel.getRangeAt(0);
+      const span = document.createElement("span");
+      span.className = "manual-edit";
+      span.textContent = e.data;
+      range.insertNode(span);
+      range.collapse(false);
+    }
+  }
+});
+
+function updateStatus(i, status) {
+  console.log(`Updating status for object ${i} to ${status}`);
+  const row = document.getElementById("object-table-body").rows[i];
+  const cell = row.cells[2];
+  let icon = "⏳", label = "Pending", cls = "status-pending";
+  if (status === "approved") {
+    icon = "✔"; label = "Approved"; cls = "status-approved";
+    saveApprovedProcedure(i);  // <-- NEW LINE
+  } else if (status === "rejected") {
+    icon = "❌"; label = "Rejected"; cls = "status-rejected";
+  }
+  cell.innerHTML = `<span class="status-icon">${icon}</span>${label}`;
+  cell.className = cls;
+}
+
+function saveApprovedProcedure(i) {
+  const data = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  console.log("📦 Developer Sessions Data:", data);
+  // console.log(`📂 Using saved code for ${procName}:`, devData[procName]);
+  // sybCode = devData[procName].sybaseCode || "--";
+  // oraCode = devData[procName].oracleCode || "--";
+  const obj = objects[i];
+  const name = obj.name;
+
+  let sybaseCode = "--", oracleCode = "--";
+
+  if (data.batch && data.batch.sybase && data.batch.oracle) {
+    const splitSybase = data.batch.sybase.split("-- ").filter(Boolean);
+    const splitOracle = data.batch.oracle.split("-- ").filter(Boolean);
+
+    const sybaseBlock = splitSybase.find(block => block.includes(name));
+    const oracleBlock = splitOracle.find(block => block.includes(name));
+
+    if (sybaseBlock) sybaseCode = sybaseBlock.trim();
+    if (oracleBlock) {
+      let cleaned = oracleBlock.replace(/^.?Converted.?--\s*/i, "");
+      oracleCode = cleaned.trim();
+    }
+  } else if (data.single && data.single.name === name) {
+    sybaseCode = data.single.sybase || "--";
+    oracleCode = data.single.oracle || "--";
+  }
+
+  const approvedList = JSON.parse(sessionStorage.getItem("approved_code_list") || "[]");
+  approvedList.push({ name, sybase: sybaseCode, oracle: oracleCode });
+  sessionStorage.setItem("approved_code_list", JSON.stringify(approvedList));
+}
+
+const approved_dict = {};
+
+
+function generateDeveloperCodeTable() {
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  const rows = [];
+
+  for (const dev in sessions) {
+    const devData = sessions[dev];
+
+    for (const proc in devData) {
+      if (proc === "passkey" || proc === "oracleCode" || proc === "sybaseCode") continue;
+
+      const entry = devData[proc];
+
+      if (entry.oracleCode) {
+        rows.push({
+          developer: dev,
+          procedure: proc,
+          sybaseCode: entry.sybaseCode,
+          oracleCode: entry.oracleCode,
+        });
+      }
+    }
+  }
+
+  const tableBody = document.querySelector("#dev-proc-table tbody");
+  tableBody.innerHTML = "";
+
+  if (rows.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center;">No data found</td></tr>`;
+    return;
+  }
+
+  rows.forEach((row, index) => {
+    const tr = document.createElement("tr");
+
+    // Escape backticks inside code for safe usage in attribute
+    const escapeForAttr = str => str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/`/g, "\\`");
+    const sysbaseSafeCode = escapeForAttr(row.sybaseCode);
+    const oracleSafeCode = escapeForAttr(row.oracleCode);
+
+    console.log(`📝 Adding row for ${row.developer} - ${row.procedure}`);
+    console.log(`📝 Sybase Code: ${sysbaseSafeCode}`);
+    console.log(`📝 Oracle Code: ${oracleSafeCode}`);
+
+    tr.innerHTML = `
+      <td style="border: 1px solid #ccc; padding: 8px;">${index}</td>
+      <td style="border: 1px solid #ccc; padding: 8px;">${row.developer}</td>
+      <td style="border: 1px solid #ccc; padding: 8px;">${row.procedure}</td>
+      <td id="status-${index}" style="border: 1px solid #ccc; padding: 8px; color: #e6b800; font-weight: bold;">Pending</td>
+      <td style="border: 1px solid #ccc; padding: 8px;">
+        <button 
+          class="approve-btn"
+          data-procedure="${row.procedure}"
+          data-sybase="${encodeURIComponent(row.sybaseCode)}"
+          data-oracle="${encodeURIComponent(row.oracleCode)}"
+          data-index="${index}"
+          style="margin-right: 6px;"
+        >✔ Approve</button>
+        <button onclick="rejectProcedure(${index})" style="color: red;">✖ Reject</button>
+      </td>
+    `;
+
+    tableBody.appendChild(tr);
+  });
+}
+
+document.querySelector("#dev-proc-table").addEventListener("click", function(e) {
+  if (e.target.classList.contains("approve-btn")) {
+    const procedure = e.target.getAttribute("data-procedure");
+    const sybase = decodeURIComponent(e.target.getAttribute("data-sybase"));
+    const oracle = decodeURIComponent(e.target.getAttribute("data-oracle"));
+    const idx = parseInt(e.target.getAttribute("data-index"));
+    approveProcedure(procedure, sybase, oracle, idx);
+  }
+});
+
+function approveProcedure(procedureName, sybaseCode, oracleCode, index) {
+   console.log("📝 Approving Procedure:", procedureName);
+  approved_dict[procedureName] = {
+    "sybase": sybaseCode,  
+    "oracle": oracleCode   
+  };
+ 
+  const statusCell = document.getElementById(`status-${index}`);
+  statusCell.textContent = "Approved";
+  statusCell.style.color = "green";
+  
+  localStorage.setItem("approved_list", JSON.stringify(approved_dict));
+  console.log("✅ Approved Dictionary:", approved_dict);
+}
+
+function rejectProcedure(index) {
+  const statusCell = document.getElementById(`status-${index}`);
+  statusCell.textContent = "Rejected";
+  statusCell.style.color = "red";
+}
+
+
+function updateReviewEditStats() {
+  
+  let stats = {};
+  try {
+    stats = JSON.parse(localStorage.getItem("migration_stats") || "{}");
+  } catch {}
+  if (typeof stats !== "object" || !stats) stats = {};
+
+  
+  const sessions = JSON.parse(localStorage.getItem("developer_sessions") || "{}");
+  stats.developer_names = Object.keys(sessions);
+
+  
+  let accepted = 0, rejected = 0;
+  const table = document.getElementById("dev-proc-table");
+  if (table) {
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const statusCell = row.querySelector("td[id^='status-']");
+      if (statusCell) {
+        const status = statusCell.textContent.trim().toLowerCase();
+        if (status === "approved") accepted++;
+        if (status === "rejected") rejected++;
+      }
+    });
+  }
+  
+  stats.accepted = accepted;
+  stats.rejected = rejected;
+
+  
+  localStorage.setItem("migration_stats", JSON.stringify(stats));
+}
+
+
+const _orig_approveProcedure_dev = approveProcedure;
+approveProcedure = function(procedureName, sybaseCode, oracleCode, index) {
+  _orig_approveProcedure_dev(procedureName, sybaseCode, oracleCode, index);
+  updateReviewEditStats();
+};
+const _orig_rejectProcedure_dev = rejectProcedure;
+rejectProcedure = function(index) {
+  _orig_rejectProcedure_dev(index);
+  updateReviewEditStats();
+};
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  setTimeout(updateReviewEditStats, 300);
+});
+
+(function(){
+  const btn = document.getElementById('copilot-chatbot-btn');
+  const panel = document.getElementById('copilot-chatbot-panel');
+  const closeBtn = document.getElementById('copilot-chatbot-close');
+  btn.onclick = function() {
+    panel.style.right = '0';
+  };
+  closeBtn.onclick = function() {
+    panel.style.right = panel.offsetWidth > 0 ? `-${panel.offsetWidth}px` : '-420px';
+  };
+ 
+  document.addEventListener('keydown', function(e){
+    if(e.key === "Escape") closeBtn.click();
+  });
+})();
+
+
+document.addEventListener("mouseup", function (e) {
+  const selection = window.getSelection();
+  const text = selection.toString().trim();
+
+  if (text.length > 0 && selection.rangeCount && selection.anchorNode) {
+    const editable = selection.anchorNode.closest(".editable");
+    if (editable) {
+      selectedText = text;
+
+      
+      document.querySelectorAll("mark.ai-selection-highlight").forEach(el => {
+        const parent = el.parentNode;
+        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+        parent.removeChild(el);
+      });
+
+      const range = selection.getRangeAt(0);
+      const mark = document.createElement("mark");
+      mark.className = "ai-selection-highlight";
+
+      try {
+        range.surroundContents(mark);
+      } catch (err) {
+        console.warn("⚠ Could not wrap selection:", err.message);
+      }
+
+      
+      const rect = range.getBoundingClientRect();
+     popupEl.style.left = `${rect.left + window.scrollX + 5}px`;
+popupEl.style.top = `${rect.top + window.scrollY + rect.height + 10}px`;
+ popupEl.style.display = "block";
+
+      textarea.value = ""; 
+      textarea.focus();
+    }
+  }
+});
+
+document.addEventListener("click", function (e) {
+  if (
+    popupEl.style.display === "block" &&
+    !popupEl.contains(e.target) &&
+    !e.target.closest(".editable")
+  ) {
+    closeAIPopup();
+  }
+});
+
+
+function closeAIPopup() {
+  popupEl.style.display = "none";
+  document.querySelectorAll("mark.ai-selection-highlight").forEach(el => {
+    const parent = el.parentNode;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+  });
+}
+
+
+function sendToAI() {
+  const question = textarea.value.trim();
+  if (!question) {
+    alert("Please enter a question for the AI.");
+    return;
+  }
+
+  document.getElementById("ai-spinner").style.display = "inline";
+  console.log("🧠 Sending to AI:", { selectedText, question });
+
+  
+  setTimeout(() => {
+    document.getElementById("ai-spinner").style.display = "none";
+ alert(`✅ AI answered your question about:\n\n${selectedText}`); // ✅ works
+
+
+    closeAIPopup();
+  }, 2000);
+}
+</script>
+</body></html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXUS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #5851d6;
+      --accent: #00c6fb;
+      --box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+      --border-radius: 12px;
+      --font-main: 'Inter', Arial, sans-serif;
+      --text-main: #23272f;
+      --text-muted: #6b7280;
+      --bg-main: #f8fafc;
+      --bg-panel: #fff;
+      --hover: #ecebff;
+      --border: #ecebff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-main);
+      font-family: var(--font-main);
+      color: var(--text-main);
+      font-size: 16px;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      color: #fff;
+      height: 60px;
+      padding: 0 32px;
+      box-shadow: var(--box-shadow);
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      margin-right: 40px;
+      color: #fff;
+      user-select: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .nav-tab {
+      margin-right: 24px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none !important;
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active, .nav-tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .main-panel {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 32px 32px 32px 32px;
+      gap: 32px;
+      max-width: 1200px;
+      margin: 36px auto 0 auto;
+      background: var(--bg-panel);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
+    .file-upload-panel {
+      width: 28%;
+      min-width: 220px;
+      background-color: var(--bg-panel);
+      border: 2px dashed var(--primary);
+      border-radius: var(--border-radius);
+      padding: 28px 18px 18px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .file-upload-panel label {
+      color: var(--primary);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .file-info {
+      color: #333;
+      font-size: 14px;
+      margin: 10px 0;
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      border-radius: 8px;
+      width: 100%;
+      text-align: center;
+    }
+    .status {
+      color: #444;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      min-height: 22px;
+    }
+    .progress-container {
+      width: 100%;
+      background-color: #eee;
+      border-radius: 5px;
+      height: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: var(--primary);
+      transition: width 0.3s ease-in-out;
+    }
+    .buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      transition: background 0.18s, color 0.18s, transform 0.12s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, var(--primary-dark) 60%, #00b4d8 100%);
+      color: #fff;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .vertical-line {
+      width: 2px;
+      background-color: #d1d1d1;
+      height: 450px;
+      margin-top: 10px;
+      border-radius: 2px;
+    }
+    .opdisplay {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+      gap: 30px;
+      width: 68%;
+      min-width: 320px;
+    }
+    .code-block {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 45%;
+      background-color: #f2f2ff;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+    }
+    .code-block h3 {
+      color: var(--primary-dark);
+      margin-bottom: 5px;
+      font-size: 1.08rem;
+      font-weight: 600;
+    }
+    .json-display {
+      background-color: #fff;
+      color: #23272f;
+      padding: 10px;
+      border-radius: 8px;
+      height: 600px;
+      overflow-y: auto;
+      border: 1px solid #ecebff;
+      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 0.98rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .back-button {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #ecebff;
+      color: var(--primary-dark);
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      transition: background-color 0.3s, color 0.18s, transform 0.12s;
+      z-index: 1000;
+      border: none;
+      font-size: 1rem;
+    }
+    .back-button:hover {
+      background: #d6d3ff;
+      color: var(--primary);
+    }
+    @media (max-width: 1100px) {
+      .main-panel { flex-direction: column; gap: 18px; padding: 16px 4px; }
+      .file-upload-panel, .opdisplay { width: 100%; min-width: unset; }
+      .vertical-line { display: none; }
+      .opdisplay { flex-direction: column; gap: 18px; }
+      .code-block { min-width: unset; }
+    }
+
+    /* Copilot Chatbot Styles */
+    #copilot-chatbot-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 9999;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    #copilot-chatbot-btn:hover {
+      box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+      transform: scale(1.07);
+    }
+    #copilot-chatbot-panel {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 98vw;
+      height: 100vh;
+      background: #fff;
+      color: #23272f;
+      box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+      border-radius: 16px 0 0 16px;
+      z-index: 99999;
+      transition: right 0.45s cubic-bezier(.4,2,.3,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #copilot-chatbot-panel .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px 10px 22px;
+      background: linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);
+      border-radius: 16px 0 0 0;
+    }
+    #copilot-chatbot-panel .header .title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #fff;
+    }
+    #copilot-chatbot-panel .header .title svg {
+      width: 26px;
+      height: 26px;
+    }
+    #copilot-chatbot-panel .header #copilot-chatbot-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #copilot-chatbot-panel #copilot-chatbot-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #f8fafc;
+      border-radius: 0 0 0 16px;
+    }
+    @media (max-width: 600px) {
+      #copilot-chatbot-panel {
+        width: 98vw !important;
+        right: -98vw !important;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <span class="logo">
+      <span class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Sybase ➔ Oracle <span style="color:#00c6fb;margin-left:6px;">AI Migration</span>
+    </span>
+    <a href="uipage1.html" class="nav-tab">Connection</a>
+    <a href="uipage2.html" class="nav-tab">Conversion</a>
+    <div class="nav-tab active">File Upload</div>
+    <a href="review_edit.html" class="nav-tab">Review & Edit</a>
+    <a href="#" class="nav-tab">Testing</a>
+    <a href="#" class="nav-tab">Report</a>
+  </div>
+
+  <div class="main-panel">
+    <div class="file-upload-panel">
+      <label for="fileUpload">
+        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 24px;"></i><br>
+        <strong>Upload File Here</strong>
+      </label>
+      <input type="file" id="fileUpload" style="display: none;">
+      <div id="fileDetails" class="file-info">No file selected</div>
+      <div class="status" id="uploadStatus">Status: Waiting for upload...</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="buttons">
+        <button id="loadBtn">Load</button>
+        <button id="convertBtn">Convert</button>
+      </div>
+    </div>
+    <div class="vertical-line"></div>
+    <div class="opdisplay">
+      <div class="code-block">
+        <h3>Sybase Code</h3>
+        <pre id="jsonResultSybase" class="json-display">Sybase code will appear here...</pre>
+      </div>
+      <div class="code-block">
+        <h3>Oracle Code</h3>
+        <pre id="jsonResultOracle" class="json-display">Oracle code will appear here...</pre>
+      </div>
+    </div>
+  </div>
+
+  <a href="uipage0.html" class="back-button">← Back</a>
+  <div id="copilot-chatbot-btn" style="
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9999;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  ">
+    <span style="display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+        <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+        <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+        <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>
+  </div>
+  <div id="copilot-chatbot-panel" style="
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    max-width: 98vw;
+    height: 100vh;
+    background: #fff;
+    color: #23272f;
+    box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+    border-radius: 16px 0 0 16px;
+    z-index: 99999;
+    transition: right 0.45s cubic-bezier(.4,2,.3,1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  ">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px 22px;background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);border-radius:16px 0 0 0;">
+      <span style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff;">
+        <span style="display:flex;align-items:center;">
+          <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+            <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+            <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+            <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Nexus Buddy
+      </span>
+      <button id="copilot-chatbot-close" style="background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <iframe id="copilot-chatbot-iframe" src="uipage4.html" style="flex:1;border:none;width:100%;height:100%;background:#f8fafc;border-radius:0 0 0 16px;"></iframe>
+  </div>
+  <style>
+  #copilot-chatbot-btn:hover {
+    box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+    transform: scale(1.07);
+  }
+  #copilot-chatbot-panel {
+    font-family: 'Inter', Arial, sans-serif;
+    box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+  }
+  @media (max-width: 600px) {
+    #copilot-chatbot-panel {
+      width: 98vw !important;
+      right: -98vw !important;
+      border-radius: 0;
+    }
+  }
+  </style>
+  <script>
+  (function(){
+    const btn = document.getElementById('copilot-chatbot-btn');
+    const panel = document.getElementById('copilot-chatbot-panel');
+    const closeBtn = document.getElementById('copilot-chatbot-close');
+    btn.onclick = function() {
+      panel.style.right = '0';
+    };
+    closeBtn.onclick = function() {
+      panel.style.right = panel.offsetWidth > 0 ? `-${panel.offsetWidth}px` : '-420px';
+    };
+    document.addEventListener('keydown', function(e){
+      if(e.key === "Escape") closeBtn.click();
+    });
+  })();
+  </script>
+
+  <script>
+    let selectedFile = null;
+
+    document.getElementById("fileUpload").addEventListener("change", function () {
+      selectedFile = this.files[0];
+      if (selectedFile) {
+        document.getElementById("fileDetails").innerText =
+          `File: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(2)} KB)`;
+        document.getElementById("uploadStatus").innerText = "Status: File ready. Click Load to continue.";
+      } else {
+        document.getElementById("fileDetails").innerText = "No file selected";
+        document.getElementById("uploadStatus").innerText = "Status: Waiting for upload...";
+      }
+    });
+
+    document.getElementById("loadBtn").addEventListener("click", function () {
+      if (!selectedFile) {
+        alert("Please select a file first!");
+        return;
+      }
+      console.log("selected file",selectedFile);
+   
+
+      document.getElementById("uploadStatus").innerText = "Status: Uploading...";
+      document.getElementById("progressBar").style.width = '0%';
+      document.getElementById("jsonResultSybase").innerText = "";
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", function (e) {
+        if (e.lengthComputable) {
+          const percent = (e.loaded / e.total) * 100;
+          document.getElementById("progressBar").style.width = percent + "%";
+        }
+      });
+
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          if (data.error) {
+            document.getElementById("uploadStatus").innerText = "Status: Failed - " + data.error;
+            document.getElementById("jsonResultSybase").innerText = "Conversion failed: " + data.error;
+          } else {
+            document.getElementById("uploadStatus").innerText = "Status: Converted Successfully ✅";
+            if (Array.isArray(data)) {
+              document.getElementById("jsonResultSybase").innerText = data.join("\n");
+            } else if (typeof data === "string") {
+              document.getElementById("jsonResultSybase").innerText = data;
+            } else {
+              document.getElementById("jsonResultSybase").innerText = JSON.stringify(data, null, 2);
+            }
+          }
+        } else {
+          document.getElementById("uploadStatus").innerText = "Status: Failed ❌";
+          document.getElementById("jsonResultSybase").innerText = "Conversion failed.";
+        }
+      };
+
+      xhr.onerror = function () {
+        document.getElementById("uploadStatus").innerText = "Status: Network error ❌";
+        document.getElementById("jsonResultSybase").innerText = "Conversion failed.";
+      };
+
+      xhr.open("POST", "http://127.0.0.1:5000/convert");
+      xhr.send(formData);
+    });
+
+    document.getElementById("convertBtn").addEventListener("click", function () {
+      const sybaseSQL = document.getElementById("jsonResultSybase").innerText;
+      document.getElementById("uploadStatus").innerText = "Status: Converting...";
+
+      fetch("http://127.0.0.1:5000/convert_with_llm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sql: sybaseSQL }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.oracle_sql) {
+            document.getElementById("jsonResultOracle").innerText = data.oracle_sql;
+            console.log("oracle code: ",data.oracle_sql);
+            document.getElementById("uploadStatus").innerText = "Status: Converted Successfully ✅";
+
+            displayConvertedCode(sybaseSQL, data.oracle_sql);
+          } else if (data.error) {
+            document.getElementById("jsonResultOracle").innerText = "Error: " + data.error;
+            document.getElementById("uploadStatus").innerText = "Status: Failed - " + data.error;
+          } else {
+            document.getElementById("jsonResultOracle").innerText = "Unexpected response from server.";
+            document.getElementById("uploadStatus").innerText = "Status: Unexpected response ❌";
+          }
+        })
+        .catch((error) => {
+          document.getElementById("jsonResultOracle").innerText = "LLM Server Error: " + error;
+          document.getElementById("uploadStatus").innerText = "Status: LLM Server Error ❌";
+        });
+    });
+
+    function displayConvertedCode(sybaseCode, oracleCode) {
+      document.getElementById("jsonResultSybase").textContent = sybaseCode;
+      document.getElementById("jsonResultOracle").textContent = oracleCode;
+      const firstLine = sybaseCode.trim().split("\n")[0].toUpperCase();
+      let objectType = "Unknown";
+      if (firstLine.includes("CREATE TRIGGER")) objectType = "Trigger";
+      else if (firstLine.includes("CREATE PROCEDURE")) objectType = "Procedure";
+      else if (firstLine.includes("CREATE FUNCTION")) objectType = "Function";
+      else if (firstLine.includes("CREATE VIEW")) objectType = "View";
+      let existing = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+      if (!existing.batch) {
+        existing.batch = { sybase: [], oracle: [], objects: [] };
+      }
+      existing.batch.sybase.push(`-- ${objectType} UploadedFile --\n${sybaseCode}`);
+      existing.batch.oracle.push(`-- ${objectType} UploadedFile --\n${oracleCode}`);
+      existing.batch.objects.push({ name: "UploadedFile", type: objectType });
+      console.log("existing batch: ",existing.batch);
+      console.log("sybase code: ",existing.batch.sybase);
+      sessionStorage.setItem("converted_review_data", JSON.stringify(existing));
+      sessionStorage.setItem("review_sybase_code", sybaseCode);
+      sessionStorage.setItem("review_oracle_code", oracleCode);
+      sessionStorage.setItem("review_source", "upload");
+    }
+
+
+</script>
+</body>
+</html>

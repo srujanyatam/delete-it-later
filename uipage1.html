@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXUS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #574fcf;
+      --accent: #00c6fb;
+      --bg-main: #f8fafc;
+      --bg-panel: #fff;
+      --border: #ecebff;
+      --shadow: 0 2px 12px rgba(44,62,80,0.08);
+      --radius: 14px;
+      --font-main: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      background: var(--bg-main);
+      color: #23272f;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      color: #fff;
+      height: 56px;
+      padding: 0 32px;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      margin-right: 40px;
+      color: #fff;
+      user-select: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .nav-tab {
+      margin-right: 24px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none !important;
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active, .nav-tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .main-content {
+      max-width: 1100px;
+      margin: 36px auto 0 auto;
+      background: var(--bg-panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 40px 40px 40px;
+    }
+    h2 {
+      margin-bottom: 24px;
+      color: var(--primary-dark);
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 24px;
+    }
+    .section {
+      background: var(--bg-panel);
+      border: 2px solid var(--border);
+      padding: 36px 32px 32px 32px;
+      border-radius: var(--radius);
+      width: 420px;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .section h2 {
+      color: var(--primary);
+      margin-bottom: 18px;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+    label {
+      color: var(--primary-dark);
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 2px;
+      font-size: 1rem;
+      letter-spacing: 0.1px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #f8fafd;
+      transition: border 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #f3f1ff;
+    }
+    button {
+      padding: 12px 0;
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 12px;
+      margin-bottom: 0;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      transition: background 0.18s, color 0.18s, transform 0.12s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, var(--primary-dark) 60%, #00b4d8 100%);
+      color: #fff;
+      transform: translateY(-2px) scale(1.03);
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    .status-message {
+      margin-top: 10px;
+      font-size: 15px;
+      min-height: 22px;
+      font-weight: 500;
+    }
+    .success {
+      color: #43e97b;
+    }
+    .error {
+      color: #ff5858;
+    }
+    .back-button {
+      margin: 18px 0 0 18px;
+      background: #ecebff;
+      color: var(--primary-dark);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      transition: background 0.18s, color 0.18s, transform 0.12s;
+    }
+    .back-button:hover {
+      background: #d6d3ff;
+      color: var(--primary);
+    }
+    @media (max-width: 1000px) {
+      .main-content { padding: 16px 4px; }
+      .container { flex-direction: column; gap: 24px; align-items: center; }
+      .section { width: 98%; }
+    }
+    #copilot-chatbot-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 9999;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    #copilot-chatbot-btn:hover {
+      box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+      transform: scale(1.07);
+    }
+    #copilot-chatbot-panel {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 98vw;
+      height: 100vh;
+      background: #fff;
+      color: #23272f;
+      box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+      border-radius: 16px 0 0 16px;
+      z-index: 99999;
+      transition: right 0.45s cubic-bezier(.4,2,.3,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #copilot-chatbot-panel {
+      font-family: 'Inter', Arial, sans-serif;
+      box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+    }
+    @media (max-width: 600px) {
+      #copilot-chatbot-panel {
+        width: 98vw !important;
+        right: -98vw !important;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <span class="logo">
+      <span class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Sybase ➔ Oracle <span style="color:#00c6fb;margin-left:6px;">AI Migration</span>
+    </span>
+    <div class="nav-tab active">Connection</div>
+    <a href="uipage2.html" class="nav-tab">Conversion</a>
+    <a href="uipage3.html" class="nav-tab">File Upload</a>
+    <a href="review_edit.html" class="nav-tab">Review & Edit</a>
+    <a href="testing.html" class="nav-tab">Testing</a>
+    <a href="report.html" class="nav-tab">Report</a>
+  </nav>
+
+  <div>
+    <button onclick="handleBack()" class="back-button">← Back</button>
+  </div>
+
+  <div class="main-content">
+    <h2>Enter Database Credentials</h2>
+    <div class="container">
+      <div class="section">
+        <h2>Sybase</h2>
+        <label>Username</label>
+        <input id="sybase_user" list="sybase_user_list" onblur="fetchSybaseCredentials()" type="text">
+        <datalist id="sybase_user_list"></datalist>
+
+        <label>Password</label>
+        <input id="sybase_pass" type="password">
+
+        <label>Server Name</label>
+        <input id="sybase_server" type="text">
+
+        <label>Port</label>
+        <input id="sybase_port" type="text">
+
+        <button onclick="saveCredentials('sybase'); connectSybase()">Connect Sybase</button>
+        <button onclick="saveCredentials('sybase')">Save Sybase Credentials</button>
+        <div id="sybase_status" class="status-message"></div>
+      </div>
+
+      <div class="section">
+        <h2>Oracle</h2>
+        <label>Username</label>
+        <input id="oracle_user" list="oracle_user_list" onblur="fetchOracleCredentials()" type="text">
+        <datalist id="oracle_user_list"></datalist>
+
+        <label>Password</label>
+        <input id="oracle_pass" type="password">
+
+        <label>Service Name</label>
+        <input id="oracle_service" type="text">
+
+        <button onclick="saveCredentials('oracle'); connectOracle()">Connect Oracle</button>
+        <button onclick="saveCredentials('oracle')">Save Oracle Credentials</button>
+        <div id="oracle_status" class="status-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="copilot-chatbot-btn" style="
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9999;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  ">
+    <span style="display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+        <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+        <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+        <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>
+  </div>
+  <div id="copilot-chatbot-panel" style="
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    max-width: 98vw;
+    height: 100vh;
+    background: #fff;
+    color: #23272f;
+    box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+    border-radius: 16px 0 0 16px;
+    z-index: 99999;
+    transition: right 0.45s cubic-bezier(.4,2,.3,1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  ">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px 22px;background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);border-radius:16px 0 0 0;">
+      <span style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff;">
+        <span style="display:flex;align-items:center;">
+          <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+            <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+            <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+            <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Nexus Buddy
+      </span>
+      <button id="copilot-chatbot-close" style="background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <iframe id="copilot-chatbot-iframe" src="uipage4.html" style="flex:1;border:none;width:100%;height:100%;background:#f8fafc;border-radius:0 0 0 16px;"></iframe>
+  </div>
+  <style>
+  </style>
+  <script>
+    let sybaseConnected = false;
+    let oracleConnected = false;
+
+    async function connectSybase() {
+      const sybase = {
+        username: document.getElementById('sybase_user').value,
+        password: document.getElementById('sybase_pass').value,
+        server: document.getElementById('sybase_server').value,
+        port: document.getElementById('sybase_port').value
+      };
+
+      const res = await fetch('/connect_sybase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sybase)
+      });
+
+      const msgBox = document.getElementById('sybase_status');
+
+      if (res.ok) {
+        sybaseConnected = true;
+        msgBox.textContent = '✅ Connected to Sybase!';
+        msgBox.className = 'status-message success';
+        
+        localStorage.setItem('sybase_user', sybase.username);
+        localStorage.setItem('sybase_pass', sybase.password);
+        localStorage.setItem('sybase_server', sybase.server);
+        localStorage.setItem('sybase_port', sybase.port);
+
+        
+        sessionStorage.setItem('sybase_user', sybase.username);
+        sessionStorage.setItem('sybase_pass', sybase.password);
+        sessionStorage.setItem('sybase_server', sybase.server);
+        sessionStorage.setItem('sybase_port', sybase.port);
+
+      } else {
+        sybaseConnected = false;
+        const err = await res.json();
+        msgBox.textContent = '❌ Sybase connection failed: ' + err.error;
+        msgBox.className = 'status-message error';
+      }
+
+      checkNextButton();
+    }
+
+    async function connectOracle() {
+      const oracle = {
+        username: document.getElementById('oracle_user').value,
+        password: document.getElementById('oracle_pass').value,
+        service: document.getElementById('oracle_service').value
+      };
+
+      const res = await fetch('/connect_oracle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(oracle)
+      });
+
+      const msgBox = document.getElementById('oracle_status');
+
+      if (res.ok) {
+        oracleConnected = true;
+        msgBox.textContent = '✅ Connected to Oracle!';
+        msgBox.className = 'status-message success';
+        
+        localStorage.setItem('oracle_user', oracle.username);
+        localStorage.setItem('oracle_pass', oracle.password);
+        localStorage.setItem('oracle_service', oracle.service);
+
+        sessionStorage.setItem('oracle_user', oracle.username);
+        sessionStorage.setItem('oracle_pass', oracle.password);
+        sessionStorage.setItem('oracle_service', oracle.service);
+
+      } else {
+        oracleConnected = false;
+        const err = await res.json();
+        msgBox.textContent = '❌ Oracle connection failed: ' + err.error;
+        msgBox.className = 'status-message error';
+      }
+
+      checkNextButton();
+    }
+
+    function checkNextButton() {
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.disabled = !(sybaseConnected && oracleConnected);
+    }
+
+    async function saveCredentials(dbType) {
+      const username = document.getElementById(dbType + '_user').value;
+      const password = document.getElementById(dbType + '_pass').value;
+      const server = document.getElementById(dbType + '_server')?.value || '';
+      const port = document.getElementById(dbType + '_port')?.value || '';
+      const service = dbType === 'oracle' ? document.getElementById('oracle_service').value : null;
+
+      const data = { db_type: dbType, username, password, server, port, service };
+
+      const res = await fetch('/save_credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const response = await res.json();
+     
+    }
+
+    async function fetchSybaseCredentials() {
+      const username = document.getElementById('sybase_user').value;
+      if (username) {
+        const res = await fetch(`/get_credentials/sybase/${username}`);
+        const data = await res.json();
+        if (data.password) {
+          document.getElementById('sybase_pass').value = data.password;
+          document.getElementById('sybase_server').value = data.server;
+          document.getElementById('sybase_port').value = data.port;
+        }
+      }
+    }
+
+    async function fetchOracleCredentials() {
+      const username = document.getElementById('oracle_user').value;
+      if (username) {
+        const res = await fetch(`/get_credentials/oracle/${username}`);
+        const data = await res.json();
+        if (data.password) {
+          document.getElementById('oracle_pass').value = data.password;
+          document.getElementById('oracle_service').value = data.service;
+        }
+      }
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('mouseenter', function () {
+        const tooltipText = this.getAttribute('data-tooltip');
+        const tooltip = document.getElementById('tooltip');
+        tooltip.textContent = tooltipText;
+        tooltip.style.display = 'block';
+        tooltip.style.top = `${this.getBoundingClientRect().top + window.scrollY + 25}px`;
+        tooltip.style.left = `${this.getBoundingClientRect().left + window.scrollX}px`;
+      });
+
+      input.addEventListener('mouseleave', function () {
+        document.getElementById('tooltip').style.display = 'none';
+      });
+    });
+
+    window.onload = function () {
+      if (localStorage.getItem('sybase_user')) {
+        document.getElementById('sybase_user').value = localStorage.getItem('sybase_user');
+        document.getElementById('sybase_pass').value = localStorage.getItem('sybase_pass');
+        document.getElementById('sybase_server').value = localStorage.getItem('sybase_server');
+        document.getElementById('sybase_port').value = localStorage.getItem('sybase_port');
+      }
+
+      if (localStorage.getItem('oracle_user')) {
+        document.getElementById('oracle_user').value = localStorage.getItem('oracle_user');
+        document.getElementById('oracle_pass').value = localStorage.getItem('oracle_pass');
+        document.getElementById('oracle_service').value = localStorage.getItem('oracle_service');
+      }
+    };
+
+
+    (function(){
+      const btn = document.getElementById('copilot-chatbot-btn');
+      const panel = document.getElementById('copilot-chatbot-panel');
+      const closeBtn = document.getElementById('copilot-chatbot-close');
+      btn.onclick = function() {
+        panel.style.right = '0';
+      };
+      closeBtn.onclick = function() {
+        panel.style.right = panel.offsetWidth > 0 ? `-${panel.offsetWidth}px` : '-420px';
+      };
+      document.addEventListener('keydown', function(e){
+        if(e.key === "Escape") closeBtn.click();
+      });
+    })();
+  </script>
+
+</body>
+</html>

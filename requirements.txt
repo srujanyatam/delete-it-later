@@ -1,0 +1,10 @@
+Flask
+flask-cors
+pyodbc
+cx_Oracle
+python-docx
+PyPDF2
+pandas
+requests
+google-generativeai
+google-auth

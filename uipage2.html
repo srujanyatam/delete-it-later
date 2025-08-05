@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXUS - Conversion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #574fcf;
+      --accent: #00c6fb;
+      --bg-main: #f8fafc;
+      --bg-panel: #fff;
+      --border: #ecebff;
+      --shadow: 0 2px 12px rgba(44,62,80,0.08);
+      --radius: 14px;
+      --font-main: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      background: var(--bg-main);
+      color: #23272f;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      background: var(--primary);
+      color: #fff;
+      height: 56px;
+      padding: 0 32px;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    .nav-tab {
+      margin-right: 24px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none !important;
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active, .nav-tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .maintab {
+      display: flex;
+      margin: 32px auto 0 auto;
+      max-width: 1200px;
+      background: var(--bg-panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-height: 600px;
+    }
+    .sidebar {
+      width: 260px;
+      background: #f5f7fa;
+      border-right: 2px solid var(--border);
+      border-radius: var(--radius) 0 0 var(--radius);
+      padding: 24px 12px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .tree-container {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 18px;
+    }
+    .convert-button {
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      transition: background 0.18s, color 0.18s, transform 0.12s;
+    }
+    .convert-button:hover {
+      background: linear-gradient(90deg, var(--primary-dark) 60%, #00b4d8 100%);
+      color: #fff;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .right-content {
+      flex: 1;
+      padding: 36px 40px 40px 40px;
+      background: var(--bg-panel);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .tab {
+      padding: 10px 22px;
+      border-radius: 8px 8px 0 0;
+      background: #ecebff;
+      color: var(--primary-dark);
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 8px;
+      border-bottom: 3px solid transparent;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab.active, .tab:hover {
+      background: #fff;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .main-content {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      padding: 24px 28px;
+      margin-bottom: 18px;
+    }
+    .panel {
+      margin-bottom: 18px;
+    }
+    .panel h3 {
+      color: var(--primary-dark);
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+    .code-block {
+      background: #f8fafd;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 0.98rem;
+      color: #23272f;
+      min-height: 80px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+    .object-info {
+      color: #6c63ff;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .back-button {
+      margin: 18px 0 0 18px;
+      background: #ecebff;
+      color: var(--primary-dark);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+      transition: background 0.18s, color 0.18s, transform 0.12s;
+    }
+    .back-button:hover {
+      background: #d6d3ff;
+      color: var(--primary);
+    }
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  margin-right: 40px;
+  color: #fff;
+  user-select: none;
+}
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  display: inline-block;
+  background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+    @media (max-width: 1100px) {
+      .maintab { flex-direction: column; }
+      .sidebar, .right-content { border-radius: var(--radius); }
+      .sidebar { width: 100%; border-right: none; border-bottom: 2px solid var(--border); }
+      .right-content { padding: 18px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <span class="logo">
+      <span class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Sybase ➔ Oracle <span style="color:#00c6fb;margin-left:6px;">AI Migration</span>
+    </span>
+    <a href="uipage1.html" class="nav-tab">Connection</a>
+    <div class="nav-tab active">Conversion</div>
+    <a href="uipage3.html" class="nav-tab">File Upload</a>
+    <a href="review_edit.html" class="nav-tab">Review & Edit</a>
+    <a href="testing.html" class="nav-tab">Testing</a>
+    <a href="report.html" class="nav-tab">Report</a>
+  </div>
+  <div style="padding: 8px;">
+    <button onclick="goBack()" class="back-button">← Back</button>
+  </div>
+  <div class="maintab">
+    <div class="sidebar">
+      <div class="tree-container" id="tree-root"></div>
+      <button id="tree-convert-btn" class="convert-button">Convert</button>
+    </div>
+    <div class="right-content">
+      <div class="tab-bar">
+        <div class="tab active" id="batch-tab">Batch</div>
+      </div>
+      <div class="main-content active" id="batch-pane">
+        <div class="panel">
+          <h3>Batch Sybase Code</h3>
+          <div id="sybase-batch" class="code-block">--</div>
+        </div>
+        <div class="panel">
+          <h3>Batch Oracle Code</h3>
+          <div id="oracle-batch" class="code-block">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div id="copilot-chatbot-btn" style="
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6c63ff 60%, #00c6fb 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+">
+  <span style="display:flex;align-items:center;justify-content:center;">
+    <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+      <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+      <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+      <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </span>
+</div>
+<div id="copilot-chatbot-panel" style="
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 400px;
+  max-width: 98vw;
+  height: 100vh;
+  background: #fff;
+  color: #23272f;
+  box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+  border-radius: 16px 0 0 16px;
+  z-index: 99999;
+  transition: right 0.45s cubic-bezier(.4,2,.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px 22px;background:linear-gradient(90deg,#6c63ff 60%,#00c6fb 100%);border-radius:16px 0 0 0;">
+    <span style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff;">
+      <span style="display:flex;align-items:center;">
+        <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+          <circle cx="16" cy="16" r="16" fill="#fff" opacity="0.13"/>
+          <path d="M8 16C8 11.58 11.58 8 16 8s8 3.58 8 8-3.58 8-8 8" stroke="#6c63ff" stroke-width="2"/>
+          <path d="M16 8v8l6 6" stroke="#00c6fb" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Nexus Buddy
+    </span>
+    <button id="copilot-chatbot-close" style="background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;">×</button>
+  </div>
+  <iframe id="copilot-chatbot-iframe" src="uipage4.html" style="flex:1;border:none;width:100%;height:100%;background:#f8fafc;border-radius:0 0 0 16px;"></iframe>
+</div>
+<style>
+#copilot-chatbot-btn:hover {
+  box-shadow: 0 8px 32px rgba(44,62,80,0.28);
+  transform: scale(1.07);
+}
+#copilot-chatbot-panel {
+  font-family: 'Inter', Arial, sans-serif;
+  box-shadow: -2px 0 24px rgba(44,62,80,0.18);
+}
+@media (max-width: 600px) {
+  #copilot-chatbot-panel {
+    width: 98vw !important;
+    right: -98vw !important;
+    border-radius: 0;
+  }
+}
+</style>
+<script>
+(function(){
+  const btn = document.getElementById('copilot-chatbot-btn');
+  const panel = document.getElementById('copilot-chatbot-panel');
+  const closeBtn = document.getElementById('copilot-chatbot-close');
+  btn.onclick = function() {
+    panel.style.right = '0';
+  };
+  closeBtn.onclick = function() {
+    panel.style.right = panel.offsetWidth > 0 ? `-${panel.offsetWidth}px` : '-420px';
+  };
+  document.addEventListener('keydown', function(e){
+    if(e.key === "Escape") closeBtn.click();
+  });
+})();
+</script>
+  <script>
+function goBack() {
+  window.location.href = "uipage1.html";
+}
+
+const tabs = {
+  batch: document.getElementById("batch-tab")
+};
+const panes = {
+  batch: document.getElementById("batch-pane")
+};
+
+let batchSelection = [];
+let currentSelection = batchSelection;
+function clearTreeSelection() {
+  document.querySelectorAll(".tree-leaf").forEach(node => {
+    node.classList.remove("selected");
+  });
+}
+
+window.onload = () => {
+  loadDatabases(() => {
+    collapseAllTreeNodes();
+    renderCodeBlocks();
+    document.getElementById("tree-root").dataset.loadedOnce = "true";
+  });
+};
+
+function collapseAllTreeNodes() {
+  const tree = document.getElementById("tree-root");
+  const folders = tree.querySelectorAll("ul:not(.collapsed)");
+  folders.forEach(ul => ul.classList.add("collapsed"));
+}
+
+function loadDatabases(callback) {
+  fetch("/get_sybase_databases")
+    .then(res => res.json())
+    .then(data => {
+      const tree = document.getElementById("tree-root");
+      tree.innerHTML = "";
+
+      data.databases.forEach(db => {
+        const dbLi = document.createElement("li");
+        dbLi.className = "folder";
+        dbLi.textContent = db;
+
+        const ul = document.createElement("ul");
+        ul.className = "collapsed";
+        dbLi.appendChild(ul);
+        dbLi.addEventListener("click", (e) => {
+          e.stopPropagation();
+          ul.classList.toggle("collapsed");
+          sessionStorage.setItem("current_sybase_db", db);
+
+          if (ul.children.length === 0) {
+            ["Tables", "Procedures", "Views", "Functions", "Triggers"].forEach(type => {
+              const typeLi = document.createElement("li");
+              typeLi.className = "folder";
+              typeLi.textContent = type;
+
+              const typeUl = document.createElement("ul");
+              typeUl.classList.add("collapsed");
+              typeLi.appendChild(typeUl);
+              typeLi.addEventListener("click", (evt) => {
+                evt.stopPropagation();
+                typeUl.classList.toggle("collapsed");
+
+                if (typeUl.children.length === 0 && !typeUl.classList.contains("collapsed")) {
+                  loadDbObjects(db, type, typeUl);
+                }
+              });
+
+              ul.appendChild(typeLi);
+            });
+          }
+        });
+
+        const ulWrap = document.createElement("ul");
+        ulWrap.appendChild(dbLi);
+        tree.appendChild(ulWrap);
+      });
+
+      if (callback) callback();
+    });
+}
+
+function loadDbObjects(db, type, container) {
+  fetch("/DBload_sybase_objects", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ database: db, objects: [type] })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data[type].length > 1) {
+        const selectAllLi = document.createElement("li");
+        const selectAllCheckbox = document.createElement("input");
+        selectAllCheckbox.type = "checkbox";
+        selectAllCheckbox.className = "select-all";
+        selectAllCheckbox.dataset.type = type;
+        selectAllCheckbox.dataset.db = db;
+
+        const label = document.createElement("label");
+        label.appendChild(selectAllCheckbox);
+        label.appendChild(document.createTextNode(" Select All"));
+        selectAllLi.appendChild(label);
+
+        container.appendChild(selectAllLi);
+
+        selectAllCheckbox.addEventListener("change", () => {
+          const childCheckboxes = container.querySelectorAll("input[type='checkbox']:not(.select-all)");
+          childCheckboxes.forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+            cb.dispatchEvent(new Event("change"));
+          });
+        });
+      }
+
+      data[type].forEach(item => {
+        const name = typeof item === 'string' ? item : item.name;
+        const code = typeof item === 'string' ? "" : item.definition;
+        const required = typeof item === 'object' && item.required ? item.required : [];
+
+        const itemLi = document.createElement("li");
+        itemLi.className = "file";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.dataset.type = type;
+        checkbox.dataset.name = name;
+        checkbox.dataset.code = code;
+        checkbox.dataset.db = db;
+        checkbox.dataset.required = JSON.stringify(required);
+
+        const label = document.createElement("label");
+        label.className = "checkbox-label";
+        label.appendChild(checkbox);
+
+        let displayText = name;
+        if (required.length > 0) {
+          displayText += `  [Tables: ${required.join(", ")}]`;
+        }
+
+        label.appendChild(document.createTextNode(displayText));
+        itemLi.appendChild(label);
+
+        checkbox.addEventListener("change", () => {
+          const checked = document.querySelectorAll(".checkbox-label input:checked");
+          batchSelection = Array.from(checked).map(cb => ({
+            type: cb.dataset.type,
+            name: cb.dataset.name,
+            code: cb.dataset.code,
+            db: cb.dataset.db,
+            required: JSON.parse(cb.dataset.required || "[]"),
+            converted: cb.dataset.converted || ""
+          }));
+          currentSelection = batchSelection;
+          renderCodeBlocks();
+        });
+
+        container.appendChild(itemLi);
+      });
+    });
+}
+
+document.getElementById("tree-convert-btn").addEventListener("click", () => {
+  if (currentSelection.length === 0) {
+    alert("Select items to convert");
+    return;
+  }
+
+  const allAreTables = currentSelection.every(obj => obj.type === "Tables");
+  const dbName = sessionStorage.getItem("current_sybase_db");
+
+  if (allAreTables) {
+    const selectedTables = currentSelection.map(obj => obj.name);
+    fetch("/execute_tables", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ database: dbName, tables: selectedTables })
+    })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("oracle-batch").textContent = data.message;
+      });
+    return;
+  }
+  const payload = {};
+  currentSelection.forEach(({ type, code }) => {
+    if (!payload[type]) payload[type] = [];
+    payload[type].push(code);
+  });
+
+  document.getElementById("oracle-batch").innerHTML = `Converting <span class="spinner"></span>`;
+  fetch("/DBconvert_objects", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ database: dbName, objects: payload })
+  })
+    .then(res => res.json())
+    .then(data => {
+      const requiredTables = data.required_tables || [];
+      let existing = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+      if (!existing.batch) {
+        existing.batch = { sybase: [], oracle: [], objects: [] };
+      }
+      existing.batch.sybase.push(...currentSelection.map(({ name, type, code }) => `-- ${type} ${name} --\n${code}`));
+      Object.entries(data).forEach(([type, list]) => {
+        if (type === "required_tables") return;
+        list.forEach((converted, i) => {
+          existing.batch.oracle.push(`-- ${type} Converted ${i + 1} --\n${converted}\n\n`);
+        });
+      });
+      existing.batch.objects.push(...currentSelection.map(({ name, type }) => ({ name, type })));
+      sessionStorage.setItem("converted_review_data", JSON.stringify(existing));
+      currentSelection.forEach(obj => {
+        obj.converted = true; 
+      });
+
+      document.getElementById("oracle-batch").textContent = currentSelection.map(obj =>
+        `ORACLE - ${obj.type} - ${obj.name} - Converted ✅`
+      ).join("\n");
+      afterBatchConversion();
+      if (requiredTables.length > 0) {
+        const proceed = confirm("Required: Tables - " + requiredTables.join(", ") + "\nDo you want to auto-migrate them?");
+        if (proceed) {
+          fetch("/execute_tables", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ database: dbName, tables: requiredTables })
+          })
+            .then(res => res.json())
+            .then(result => {
+              console.log("Auto-migrated tables:", result);
+            });
+        }
+      }
+    });
+});
+
+
+
+function convertSingle() {
+  const obj = currentSelection[0];
+  const currentDb = sessionStorage.getItem("current_sybase_db");
+
+  document.getElementById("oracle-code").innerHTML = `Converting <span class="spinner"></span>`;
+  fetch("/DBconvert_objects", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      database: currentDb,
+      objects: { [obj.type]: [obj.code] }
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      const oracleCode = data[obj.type]?.[0] || "Conversion failed.";
+      const requiredTables = data.required_tables || [];
+
+      obj.converted = oracleCode;
+      obj.required = requiredTables;
+
+      if (requiredTables.length > 0) {
+        const proceed = confirm("Required: Tables - " + requiredTables.join(", ") + "\nDo you want to auto-migrate them?");
+        if (proceed) {
+          fetch("/execute_tables", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ database: currentDb, tables: requiredTables })
+          })
+            .then(res => res.json())
+            .then(result => console.log("Auto-migrated tables:", result));
+        }
+      }
+
+      lastOracleResult = oracleCode;
+      console.log("Oracle code:-----------------------------------------------",oracleCode);
+      renderCodeBlocks()
+      let existing = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+      existing.single = {
+        sybase: obj.code,
+        oracle: oracleCode,
+        name: obj.name,
+        type: obj.type
+      };
+      sessionStorage.setItem("converted_review_data", JSON.stringify(existing));
+    });
+}
+
+
+
+function renderCodeBlocks() {
+  const sybaseBatch = document.getElementById("sybase-batch");
+  const oracleBatch = document.getElementById("oracle-batch");
+  sybaseBatch.innerHTML = oracleBatch.innerHTML = "";
+
+  if (!currentSelection.length) {
+    sybaseBatch.innerHTML = oracleBatch.innerHTML =
+      `<div class="object-info">No object selected.</div>`;
+    return;
+  }
+  const sybLines = currentSelection.map(obj => `SYBASE - ${obj.db} - ${obj.type} - ${obj.name}`).join("<br>");
+  const oraLines = currentSelection.map(obj => `ORACLE - ${obj.type} - ${obj.name} ${obj.converted ? "(Converted ✅)" : "(❌ Not Converted)"}`).join("<br>");
+  sybaseBatch.innerHTML = `<div class="object-info">${sybLines}</div>`;
+  oracleBatch.innerHTML = `<div class="object-info">${oraLines}</div>`;
+}
+
+let lastOracleResult = "";
+let lastOracleBatchResult = "";
+let lastSavedData = "";
+
+setInterval(() => {
+  const data = {};
+  if (lastOracleResult && singleSelection.length === 1) {
+    const obj = singleSelection[0];
+    data.single = {
+      sybase: obj.code,
+      oracle: lastOracleResult,
+      name: obj.name,
+      type: obj.type
+    };
+  }
+  if (lastOracleBatchResult && batchSelection.length > 1) {
+    data.batch = {
+      sybase: batchSelection.map(({ type, name, code }) => `-- ${type} ${name} --\n${code}`).join("\n\n"),
+      oracle: lastOracleBatchResult,
+      objects: batchSelection.map(({ type, name }) => ({ type, name }))
+    };
+  }
+
+  const str = JSON.stringify(data);
+  if (str !== lastSavedData) {
+    sessionStorage.setItem("converted_review_data", str);
+    lastSavedData = str;
+  }
+}, 1000);
+
+function updateMigrationStatsFromBatch() {
+  let stats = {
+    migrated: 0,
+    developer_rejected: 0,
+    test_failed: 0,
+    tables: 0,
+    procedures: 0,
+    triggers: 0,
+    cursors: 0,
+    views: 0,
+    functions: 0,
+    dev_rejected_by_type: {
+      tables: 0,
+      procedures: 0,
+      triggers: 0,
+      cursors: 0,
+      views: 0,
+      functions: 0
+    },
+    developer_names: JSON.parse(localStorage.getItem("developer_sessions") || "{}") ? Object.keys(JSON.parse(localStorage.getItem("developer_sessions") || "{}")) : []
+  };
+  const typeMap = {
+    tables: "tables",
+    procedures: "procedures",
+    triggers: "triggers",
+    cursors: "cursors",
+    views: "views",
+    functions: "functions",
+    table: "tables",
+    procedure: "procedures",
+    trigger: "triggers",
+    cursor: "cursors",
+    view: "views",
+    function: "functions"
+  };
+  let batch = {};
+  try {
+    const data = JSON.parse(sessionStorage.getItem("converted_review_data") || "{}");
+    batch = data.batch || {};
+  } catch {}
+
+  if (batch.objects && Array.isArray(batch.objects)) {
+    batch.objects.forEach(obj => {
+      const rawType = (obj.type || "").toLowerCase();
+      const statsKey = typeMap[rawType];
+      if (statsKey && stats.hasOwnProperty(statsKey)) {
+        stats[statsKey]++;
+      }
+      stats.migrated++;
+    });
+  }
+  localStorage.setItem("migration_stats", JSON.stringify(stats));
+}
+
+function afterBatchConversion() {
+  renderCodeBlocks();
+  updateMigrationStatsFromBatch();
+}
+  </script>
+</body>
+</html>
